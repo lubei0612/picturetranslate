@@ -1,8 +1,8 @@
 # MVP 技术规格文档
 
 > 创建时间: 2025-12-03
-> 状态: Clarify 阶段完成，待 Codex 审查
-> 版本: v0.1
+> 状态: Decision 阶段完成，待实现确认
+> 版本: v0.3
 
 ---
 
@@ -139,37 +139,112 @@ U2NET_HOME=/root/.u2net
 
 ---
 
-## 七、待审查问题 (Codex Review)
+## 七、Codex 审查结果 ✅
 
-1. **阿里云 API 返回**：URL 需额外下载，延迟影响？
-2. **内存预估**：u2netp + 2048x2048 图片，4GB 够用？
-3. **Streamlit 并发**：多用户同时处理是否 OOM？
-4. **模型预下载**：Dockerfile 是否需要预置 u2netp.onnx？
-5. **边缘羽化**：PIL GaussianBlur 是否最佳方案？
-
----
-
-## 八、风险清单 (初版)
-
-| 风险 | 等级 | 应对措施 |
+| 问题 | 结论 | 落地措施 |
 |------|------|----------|
-| 4GB OOM | 高 | 强制 u2netp + 限制图片尺寸 |
-| 阿里云返回尺寸不一致 | 中 | 合成前 resize 对齐 |
-| 模型下载失败 | 中 | Dockerfile 预下载 |
-| QPS 限制 (5/s) | 低 | MVP 单用户，暂不限流 |
+| 1. 阿里云 URL 下载 | ✅ 同步可行，1-2 并发延迟 ~1-2s | `requests.get(stream=True, timeout=5)` + 重试 |
+| 2. 内存与尺寸 | ⚠️ 4GB 需封顶 | 上传 ≤12MB、长边 ≤2048px、强制 RGB、rembg 前 thumbnail |
+| 3. Streamlit 生产 | ⚠️ 需配置参数 | `--server.maxUploadSize=10 --server.enableXsrfProtection=true`，限 2 workers |
+| 4. Dockerfile | ⚠️ 需预热 | 构建时下载 u2netp.onnx 到 `/root/.u2net/`，安装 libgl1-mesa libglib2.0-0 |
+| 5. 边缘羽化 | ⚠️ 可优化 | 改用 cv2.GaussianBlur 或形态学膨胀，效果更可控 |
+| 6. 额外风险 | ⚠️ 多项 | 添加 token bucket、超时回退原图、启动预热模型、增加日志 |
 
 ---
 
-## 九、审批记录
+## 八、Options 阶段 - 三套方案
+
+### 方案 A：最小可行版 (Minimal)
+```
+特点: 同步处理、基础错误处理、PIL 羽化
+优点: 实现最快 (~2h)、依赖最少
+缺点: 边缘效果一般、无频控保护、无日志
+适用: 内部演示、快速验证
+```
+
+### 方案 B：优化生产版 (Optimized) ⭐ 推荐
+```
+特点: cv2 边缘处理、token bucket 频控、预热模型、结构化日志
+优点: 边缘效果好、生产可用、资源限制完善
+缺点: 实现稍复杂 (~4h)、依赖 opencv-python-headless
+适用: MVP 上线、小规模用户验证
+```
+
+### 方案 C：健壮企业版 (Robust)
+```
+特点: 异步队列、Redis 缓存、Prometheus 监控、多 worker
+优点: 高并发、可观测性强、企业级稳定
+缺点: 实现复杂 (~8h+)、需额外基础设施
+适用: 后期扩展、高流量场景
+```
+
+---
+
+## 九、Review 阶段 - 风险识别
+
+### 综合风险矩阵
+
+| 风险 | 等级 | 概率 | 影响 | 方案 B 应对 |
+|------|------|------|------|-------------|
+| 4GB OOM | 高 | 中 | 服务崩溃 | 12MB/2048px 硬限制 + thumbnail 预处理 |
+| 阿里云频控 (5 QPS) | 中 | 低 | 请求失败 | token bucket 限流 + 指数退避重试 |
+| 网络超时 | 中 | 中 | 用户等待 | 5s timeout + 回退原图 |
+| rembg 首次下载阻塞 | 高 | 一次性 | 首请求 30s+ | Dockerfile 预下载 + 启动脚本触发 |
+| 边缘锯齿 | 中 | 中 | 效果差 | cv2 羽化 + 可调半径 (3-5px) |
+| 无日志/监控 | 低 | - | 难排查 | logging 模块 + 结构化输出 |
+
+### 架构审查结论
+
+1. **内存安全**：方案 B 的双重限制 (12MB + 2048px) 确保峰值 <2GB，留足余量
+2. **延迟可接受**：单图处理 3-8s (抠图 ~2s + 翻译 ~3s + 合成 ~0.5s)
+3. **并发能力**：2-core 限制下支持 1-2 并发用户，符合 MVP 预期
+4. **边缘质量**：cv2 方案经 Codex 确认优于 PIL，值得额外依赖
+
+---
+
+## 十、Decision 阶段 - 最终决策
+
+### 选定方案：B - 优化生产版
+
+**决策理由：**
+1. **平衡点最优**：4h 实现周期 vs 生产级稳定性
+2. **Codex 建议全覆盖**：6 项风险点均有对应措施
+3. **扩展性预留**：结构化代码便于后续升级到方案 C
+4. **用户体验**：cv2 边缘处理显著优于 PIL
+
+### 实现清单 (方案 B)
+
+| 文件 | 核心功能 |
+|------|----------|
+| `app.py` | Streamlit UI + 12MB/2048px 校验 + 左右对比 |
+| `processor.py` | ImageTranslator + cv2 羽化 + token bucket |
+| `Dockerfile` | python:3.11-slim + 预下载 u2netp + 系统依赖 |
+| `requirements.txt` | 锁定版本 + opencv-python-headless |
+| `startup.sh` | 模型预热脚本 |
+
+### 技术约束 (硬性)
+
+```python
+MAX_UPLOAD_SIZE = 12 * 1024 * 1024  # 12MB
+MAX_DIMENSION = 2048                 # 长边限制
+FEATHER_RADIUS = 3                   # 羽化半径
+API_TIMEOUT = 5                      # 秒
+RETRY_COUNT = 3                      # 重试次数
+```
+
+---
+
+## 十一、审批记录
 
 | 阶段 | 状态 | 审批人 | 时间 |
 |------|------|--------|------|
 | Clarify | ✅ 完成 | Claude | 2025-12-03 |
-| Codex Review | ⏳ 待审 | - | - |
-| Options | ⏳ 待定 | - | - |
-| Final Decision | ⏳ 待定 | - | - |
-| Implementation | ⏳ 待批 | - | - |
+| Codex Review | ✅ 完成 | Codex | 2025-12-03 |
+| Options | ✅ 完成 | Claude | 2025-12-03 |
+| Review | ✅ 完成 | Claude | 2025-12-03 |
+| Decision | ✅ 完成 | Claude | 2025-12-03 |
+| Implementation | ⏳ 待用户确认 | - | - |
 
 ---
 
-*文档版本: v0.1 - Clarify 阶段*
+*文档版本: v0.3 - Decision 阶段完成*
