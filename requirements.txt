@@ -1,0 +1,7 @@
+streamlit==1.29.0
+pillow==10.1.0
+requests==2.31.0
+alibabacloud_alimt20181012==1.2.3
+alibabacloud_tea_openapi==0.3.8
+alibabacloud_tea_util==0.3.11
+python-dotenv==1.0.0
