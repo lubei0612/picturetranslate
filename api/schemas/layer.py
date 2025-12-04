@@ -91,6 +91,7 @@ class TextLayerBatchUpdateItem(_CamelModel):
 
 
 class TextLayerBatchUpdateRequest(_CamelModel):
+    translation_id: str = Field(..., min_length=1)
     layers: list[TextLayerBatchUpdateItem] = Field(..., min_length=1)
 
 

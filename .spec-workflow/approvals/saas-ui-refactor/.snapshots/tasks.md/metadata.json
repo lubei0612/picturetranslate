@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/saas-ui-refactor/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-04T12:26:35.065Z",
+      "trigger": "initial",
+      "approvalId": "approval_1764851195062_bkpgt2p3x",
+      "approvalTitle": "Tasks: 6 阶段完整任务列表 (符合 AGENTS.md)"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-04T12:26:41.704Z",
+      "trigger": "approved",
+      "approvalId": "approval_1764851195062_bkpgt2p3x",
+      "approvalTitle": "Tasks: 6 阶段完整任务列表 (符合 AGENTS.md)"
+    }
+  ]
+}

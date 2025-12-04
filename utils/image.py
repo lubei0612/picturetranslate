@@ -81,6 +81,7 @@ def compute_hash(
     protect_product: Optional[bool] = None,
     mask_digest: Optional[str] = None,
     extra: Optional[str] = None,
+    engine: Optional[str] = None,
 ) -> str:
     """Compute a cache key using image hash plus translation parameters."""
 
@@ -97,6 +98,8 @@ def compute_hash(
         components.append(f"mask={mask_digest}")
     if extra:
         components.append(extra)
+    if engine:
+        components.append(f"engine={engine}")
 
     return "|".join(components)
 

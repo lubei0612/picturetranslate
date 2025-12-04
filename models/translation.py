@@ -5,12 +5,15 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from .text_layer import TextLayer
 
 
 class TranslationStatus(str, enum.Enum):
@@ -53,6 +56,11 @@ class Translation(Base):
     )
 
     job: Mapped["Job"] = relationship("Job", back_populates="translations")
+    layers: Mapped[List["TextLayer"]] = relationship(
+        "TextLayer",
+        back_populates="translation",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
         return f"<Translation id={self.id} job={self.job_id} status={self.status}>"

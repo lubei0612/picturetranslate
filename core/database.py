@@ -50,7 +50,7 @@ def init_db(models: Iterable[Type[DeclarativeBase]] | None = None) -> None:
 
     if models is None:
         # Lazy import to avoid circular references.
-        from models import job, translation  # noqa: F401
+        from models import job, text_layer, translation  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
 

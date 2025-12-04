@@ -22,7 +22,8 @@ class TranslateParams:
     target_lang: str
     field: str = "e-commerce"
     enable_postprocess: bool = True
-    protect_product: bool | None = None
+    protect_product: Optional[bool] = None
+    engine: Optional[str] = None
 
 
 class TranslatorService:
@@ -52,7 +53,8 @@ class TranslatorService:
         field: str,
         enable_postprocess: bool,
         *,
-        protect_product: bool | None = None,
+        protect_product: Optional[bool] = None,
+        engine: Optional[str] = None,
     ) -> bytes:
         """Execute translation, returning PNG bytes."""
 
@@ -62,6 +64,7 @@ class TranslatorService:
             field=field,
             enable_postprocess=enable_postprocess,
             protect_product=protect_product,
+            engine=engine,
         )
         return self.translate_with_params(image_bytes=image_bytes, params=params)
 
@@ -92,6 +95,7 @@ class TranslatorService:
                 target_lang=params.target_lang,
                 field=params.field,
                 enable_postprocess=params.enable_postprocess,
+                engine=params.engine,
             )
         except Exception as exc:  # pragma: no cover - depends on SDK
             raise TranslationError(str(exc)) from exc

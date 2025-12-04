@@ -9,6 +9,7 @@ from services.cache import CacheService
 from services.cleanup import CleanupService, cleanup_service
 from services.history import HistoryService
 from services.job_queue import JobQueueService
+from services.layer_service import LayerService
 from services.sse_manager import sse_manager
 from services.storage import StorageService
 from services.translator import TranslatorService
@@ -23,6 +24,11 @@ def _translator_singleton() -> TranslatorService:
 def _cache_singleton() -> CacheService:
     return CacheService()
 
+
+
+@lru_cache(maxsize=1)
+def _layer_service_singleton() -> LayerService:
+    return LayerService(session_factory=SessionLocal)
 
 @lru_cache(maxsize=1)
 def _storage_singleton() -> StorageService:
@@ -68,11 +74,16 @@ def get_cleanup_service() -> CleanupService:
     return cleanup_service
 
 
+def get_layer_service() -> LayerService:
+    return _layer_service_singleton()
+
+
 __all__ = [
     "get_translator_service",
     "get_cache_service",
     "get_storage_service",
     "get_job_queue_service",
     "get_history_service",
+    "get_layer_service",
     "get_cleanup_service",
 ]

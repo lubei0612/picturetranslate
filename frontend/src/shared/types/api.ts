@@ -68,7 +68,7 @@ export interface EngineInfo {
 /** 引擎列表响应 */
 export interface EngineListResponse {
   /** 可用引擎列表 */
-  engines: string[];
+  engines: EngineInfo[];
   /** 默认引擎 */
   default: string;
 }

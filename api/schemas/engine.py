@@ -21,7 +21,7 @@ class EngineInfo(_CamelModel):
 
 
 class EngineListResponse(_CamelModel):
-    engines: list[str] = Field(default_factory=list)
+    engines: list[EngineInfo] = Field(default_factory=list)
     default: str = Field(..., min_length=1)
 
 

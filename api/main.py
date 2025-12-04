@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.dependencies import get_job_queue_service
-from api.routes import health, history, jobs, translate
+from api.routes import engines, health, history, jobs, layers, translate
 from core.config import settings
 from core.database import init_db
 from core.exceptions import register_exception_handlers
@@ -65,6 +65,8 @@ def create_app() -> FastAPI:
     app.include_router(translate.router, prefix="/api")
     app.include_router(jobs.router, prefix="/api")
     app.include_router(history.router, prefix="/api")
+    app.include_router(engines.router, prefix="/api")
+    app.include_router(layers.router, prefix="/api")
 
     register_exception_handlers(app)
     return app

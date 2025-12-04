@@ -50,6 +50,8 @@ export interface TextLayerUpdateRequest {
 
 /** 图层批量更新请求 */
 export interface TextLayerBatchUpdateRequest {
+  /** 关联的翻译记录 ID */
+  translationId: string;
   /** 图层更新列表 */
   layers: Array<{
     id: string;

@@ -10,6 +10,7 @@ from fastapi.responses import Response
 
 from api.dependencies import get_cache_service, get_translator_service
 from core.config import settings
+from core.engines import EngineRegistry
 from core.exceptions import ValidationError
 from services.cache import CacheService
 from services.translator import TranslatorService
@@ -28,6 +29,7 @@ async def translate_image(
     field: str = Form("e-commerce"),
     enable_postprocess: bool = Form(True),
     protect_product: bool = Form(settings.PROTECT_PRODUCT_DEFAULT),
+    engine: str | None = Form(None),
     translator: TranslatorService = Depends(get_translator_service),
     cache: CacheService = Depends(get_cache_service),
 ):
@@ -40,8 +42,21 @@ async def translate_image(
     if not is_valid:
         raise ValidationError(message)
 
+    selected_engine = None
+    if engine:
+        known_engines = {name.lower(): name for name in EngineRegistry.list_registered()}
+        normalized = engine.strip().lower()
+        if normalized not in known_engines:
+            raise ValidationError("指定的翻译引擎不存在")
+        selected_engine = known_engines[normalized]
+
     cache_key = compute_hash(
-        content, source_lang, target_lang, field, protect_product=protect_product
+        content,
+        source_lang,
+        target_lang,
+        field,
+        protect_product=protect_product,
+        engine=selected_engine,
     )
     cached = cache.get(cache_key)
     if cached:
@@ -57,6 +72,7 @@ async def translate_image(
             field,
             enable_postprocess,
             protect_product=protect_product,
+            engine=selected_engine,
         ),
     )
 

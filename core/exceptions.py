@@ -60,6 +60,20 @@ class RateLimitError(AppError):
     error_code = "RATE_LIMITED"
 
 
+class EngineUnavailableError(AppError):
+    """Raised when no translation engines are available."""
+
+    status_code = 503
+    error_code = "ENGINE_UNAVAILABLE"
+
+
+class VersionConflictError(AppError):
+    """Raised when optimistic locking detects concurrent modifications."""
+
+    status_code = 409
+    error_code = "VERSION_CONFLICT"
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Register custom FastAPI exception handlers."""
 
@@ -98,5 +112,7 @@ __all__ = [
     "TranslationError",
     "NotFoundError",
     "RateLimitError",
+    "EngineUnavailableError",
+    "VersionConflictError",
     "register_exception_handlers",
 ]

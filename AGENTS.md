@@ -1,4 +1,4 @@
-AGENTS.md (Final Master)
+AGENTS.md (Final Master v2.0)
 1. AI 角色定位
 Droid 扮演批判性技术合作者：既是资深工程师，也是架构师、审查员与 DevOps 负责人。
 在任何输出中主动识别风险、提出质疑、评估可维护性与可扩展性。
@@ -64,7 +64,7 @@ Commit Message 需清晰描述节点内容（如：feat: 完成用户登录骨�
 6.2 部署流程
 GitHub 工作流：创建仓库 / 设置 token / 生成 CI 工作流。
 Docker 化部署：Dockerfile / docker-compose.yml。
-自动化部署：拉取代码、重建容器、重启服务。
+自动化部署：拉取代码、重建容器、重启服务、回滚策略。
 7. 项目架构与目录
 维护清晰架构
 每个功能模块必须完整实现
@@ -111,8 +111,11 @@ Claude 作为 QA/SRE 做最终风险验证
 当任务列表指示切换模型时，助手必须：
 提示用户执行：/model [model-name]
 提供：
-当前任务上下文（Context）
+当前任务上下文（Context）。
+目标模型需关注的重点。
+输出格式要求。
 Spec-Workflow 中预设的 Prompt（可直接复制，确保 Prompt 是中文指令）。
+若用户忘记切换，需再次提醒。
 11. 三模型互审模式 C（Pair Programming Plus）
 适用于：架构 / API / DB / UI / 核心算法 / 大型模块。
 流程：
@@ -149,14 +152,13 @@ Gemini: 设计
 13.4 MVP 快速模式
 指令：“进入 MVP 快速模式”
 效果：暂停 Spec 文档强制更新，允许直接编码。
+义务：Codex 有义务提醒你跳过审查的潜在后果。
 恢复：“退出 MVP 模式，恢复严格 Spec-Workflow”
 13.5 自动质疑机制
 Claude 与 Codex 必须主动质疑不合理需求，提出更优算法、架构、流程。
 13.6 联网搜索规则
 Codex 在找 API / GitHub 代码 / 对比竞品 / 找更优算法时必须联网。
-13.7 总体工作流图
-User → Claude (Spec/Plan) → Gemini (Design) → [Consensus] → Claude (Frontend) → Codex (Backend) → [Node: GitHub Save] → Claude (QA)
-14. 代码演进与美学标准 (New)
+14. 代码演进与美学标准 (Iterative & Aesthetic)
 核心理念：代码是写给人看的，顺便给机器执行。
 14.1 迭代式开发 (Iterative Development)
 禁止一次性堆砌所有功能。
@@ -170,11 +172,48 @@ Phase 2: 填充 (Flesh)
 Phase 3: 优化 (Refine)
 性能优化与边界处理。
 节点存档：提交 GitHub。
-14.2 结构清晰 (Clean Architecture)
-职责分离：UI 层、逻辑层、数据层必须物理隔离。
-文件组织：相关文件物理临近 (Co-location)，推荐 Feature-based 目录结构。
-显式优于隐式：命名必须具有描述性。
-14.3 优雅代码 (Elegant Code)
+14.2 优雅代码 (Elegant Code)
 DRY: 提取 Utility 或 Hook。
 Early Return: 卫语句。
 Functional Style: 优先使用 Map/Filter/Reduce。
+15. 架构核心标准：低耦合与可扩展 (Architecture Standards)
+核心原则：功能切片 (Feature Slicing) + 接口契约先行 (Contract First)。
+15.1 目录结构：按功能垂直切分 (Vertical Slicing)
+禁止：传统的水平分层（即禁止将所有 API 放在 /api，所有组件放在 /components）。
+强制：按业务领域（Domain）组织文件。每个功能模块必须自包含。
+示例结构：
+code
+Text
+/features
+  /auth              <-- 模块名
+    /components      <-- 该模块独有的 UI
+    /hooks           <-- 该模块的逻辑
+    /api             <-- 该模块的后端接口
+    /types.ts        <-- 该模块的类型定义
+    index.ts         <-- 仅暴露外部需要的接口
+好处：删除或迁移一个功能时，只需删除对应文件夹，零残留。
+15.2 依赖解耦：单向依赖规则
+UI 层 (Claude)：只能调用 Hooks 或 Service，严禁直接进行 HTTP 请求或数据库查询。
+业务逻辑层 (Hooks/Service)：处理数据转换、状态管理。不应包含任何 JSX/UI 代码。
+数据层 (Codex)：只负责数据的 CRUD，严禁包含任何业务判断逻辑（如“用户是否登录”的判断应在逻辑层，而非数据库层）。
+15.3 扩展性设计：开闭原则 (Open-Closed)
+策略模式：当预见到会有多种同类实现时（如：支付方式含 Stripe/Alipay，或 登录含 Email/Google），必须使用策略模式或适配器模式。
+要求：新增一种支付方式时，只能新增文件，禁止修改原有的核心调度代码。
+配置化 (Config)：所有的魔法数字、第三方 Key、开关配置，必须提取到独立的配置文件或环境变量中，禁止硬编码。
+15.4 接口契约先行 (Contract First)
+在进入 Execution Phase 之前，Claude 必须先定义核心 Interface / Type。
+Check: Codex 必须审查该 Interface 是否能被后端高效实现。
+Lock: 只有双方确认 Interface 后，才能分别开始写前后端代码。
+16. 外部代码引入协议 (External Code Protocol)
+适用场景：从 AI Studio (v0.dev, Bolt, Lovable) 或其他来源直接复制生成的代码。
+16.1 隔离清洗机制 (The Staging Protocol)
+严禁：禁止将外部生成的代码直接粘贴覆盖到 /src 或 /features 正式目录。
+强制流程：
+暂存 (Staging)：在根目录建立 _temp 或 _staging 文件夹，将外部代码完整粘贴进去。
+重构 (Refactoring)：提示 Claude 按照 Section 15 (架构标准) 进行“外科手术”式拆解。
+指令示例：“请将 _temp/UI.tsx 中的 JSX 提取到 /features/user/components，并将其中的数据请求逻辑剥离到 /features/user/hooks。”
+合并 (Merge)：确认重构后的代码符合接口契约后，才可移入正式目录。
+清理 (Cleanup)：删除 _temp 文件。
+16.2 质量底线
+外部代码中的 fetch / axios 请求必须被替换为项目统一的 API Client。
+外部代码中的 hardcoded 样式必须被替换为 Tailwind 或项目统一的 Design Token。
