@@ -1,0 +1,12 @@
+{
+  "id": "approval_1764817359039_hznp435jl",
+  "title": "Design Document - FastAPI + React 分层架构设计",
+  "filePath": ".spec-workflow/specs/frontend-integration/design.md",
+  "type": "document",
+  "status": "approved",
+  "createdAt": "2025-12-04T03:02:39.039Z",
+  "category": "spec",
+  "categoryName": "frontend-integration",
+  "response": "通过仪表板批准",
+  "respondedAt": "2025-12-04T03:05:07.248Z"
+}

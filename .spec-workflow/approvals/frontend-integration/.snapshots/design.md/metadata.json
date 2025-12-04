@@ -1,0 +1,38 @@
+{
+  "filePath": ".spec-workflow/specs/frontend-integration/design.md",
+  "currentVersion": 4,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-04T03:02:39.042Z",
+      "trigger": "initial",
+      "approvalId": "approval_1764817359039_hznp435jl",
+      "approvalTitle": "Design Document - FastAPI + React 分层架构设计"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-04T03:05:07.246Z",
+      "trigger": "approved",
+      "approvalId": "approval_1764817359039_hznp435jl",
+      "approvalTitle": "Design Document - FastAPI + React 分层架构设计"
+    },
+    {
+      "version": 3,
+      "filename": "snapshot-003.json",
+      "timestamp": "2025-12-04T09:13:33.528Z",
+      "trigger": "approved",
+      "approvalId": "approval_1764839213862_338d9lef2",
+      "approvalTitle": "Design V2.0 - Codex 审查修订版"
+    },
+    {
+      "version": 4,
+      "filename": "snapshot-004.json",
+      "timestamp": "2025-12-04T09:13:34.562Z",
+      "trigger": "approved",
+      "approvalId": "approval_1764837946795_7j4ts6zkd",
+      "approvalTitle": "Design V2: SQLite全栈架构 + 批量/Mask/历史/H5"
+    }
+  ]
+}
