@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, DragEvent, useCallback, useRef, useState } from "react";
 
 import { downloadBlob } from "../api/translateClient";
 import { useTranslation } from "../hooks/useTranslation";
@@ -27,6 +27,8 @@ export function Dashboard() {
   const [sourceLang, setSourceLang] = useState("auto");
   const [targetLang, setTargetLang] = useState("zh");
   const [field, setField] = useState<"e-commerce" | "general">("e-commerce");
+  const [isDragActive, setIsDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const onFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.length) {
@@ -60,13 +62,55 @@ export function Dashboard() {
     }
   }, [resultBlob]);
 
+  const handleDrag = useCallback((event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.type === "dragenter" || event.type === "dragover") {
+      setIsDragActive(true);
+    } else if (event.type === "dragleave") {
+      setIsDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragActive(false);
+    if (!event.dataTransfer.files?.length) {
+      return;
+    }
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
+  }, []);
+
+  const openFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
   return (
     <div className="dashboard">
       <section className="panel">
-        <label className="block">
-          <span>上传图片</span>
-          <input type="file" accept="image/*" onChange={onFileChange} />
-        </label>
+        <div
+          className={`drop-zone ${isDragActive ? "drop-zone--active" : ""}`}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+        >
+          <p className="drop-zone__title">上传图片</p>
+          <p className="drop-zone__hint">拖拽图片到这里，或</p>
+          <button className="drop-zone__button" type="button" onClick={openFilePicker}>
+            选择文件
+          </button>
+          <p className="drop-zone__filename">{file ? file.name : "未选择文件"}</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={onFileChange}
+            hidden
+          />
+        </div>
 
         <div className="grid">
           <label>
