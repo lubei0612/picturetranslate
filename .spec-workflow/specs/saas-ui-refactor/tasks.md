@@ -284,10 +284,10 @@ Output: 线框图 + 组件变形规则
 ## Phase 3: 前端骨架 + Staging 清洗
 
 ### Task 3.1: 目录结构搭建
-- [ ] 3.1.1 创建 `frontend/src/features/` 目录结构（空壳）
-- [ ] 3.1.2 创建 `frontend/src/shared/` 目录结构
-- [ ] 3.1.3 创建 `frontend/src/layouts/` 目录结构
-- [ ] 3.1.4 配置 tsconfig.json paths 别名 (@/)
+- [x] 3.1.1 创建 `frontend/src/features/` 目录结构（空壳）
+- [x] 3.1.2 创建 `frontend/src/shared/` 目录结构
+- [x] 3.1.3 创建 `frontend/src/layouts/` 目录结构
+- [x] 3.1.4 配置 tsconfig.json paths 别名 (@/)
 
 **执行模型**: Claude
 **预估耗时**: 20 min
@@ -303,10 +303,10 @@ Success: import @ 别名可用，目录结构符合 AGENTS.md 15.1
 ---
 
 ### Task 3.2: 设计稿 Staging 暂存
-- [ ] 3.2.1 创建 `frontend/_staging/` 目录
-- [ ] 3.2.2 复制设计稿 `crossborder-ai/components/*.tsx` 到 `_staging/`
-- [ ] 3.2.3 复制设计稿 `crossborder-ai/types.ts` 到 `_staging/`
-- [ ] 3.2.4 复制设计稿 `crossborder-ai/constants.ts` 到 `_staging/`
+- [x] 3.2.1 创建 `frontend/_staging/` 目录
+- [x] 3.2.2 复制设计稿 `crossborder-ai/components/*.tsx` 到 `_staging/`
+- [x] 3.2.3 复制设计稿 `crossborder-ai/types.ts` 到 `_staging/`
+- [x] 3.2.4 复制设计稿 `crossborder-ai/constants.ts` 到 `_staging/`
 
 **执行模型**: Claude
 **预估耗时**: 10 min
@@ -321,10 +321,10 @@ Restrictions: 不修改任何文件内容，仅复制
 ---
 
 ### Task 3.3: Staging 代码审查
-- [ ] 3.3.1 分析 _staging 代码结构和依赖
-- [ ] 3.3.2 识别需要替换的 fetch/axios 请求
-- [ ] 3.3.3 识别需要替换的 hardcoded 样式
-- [ ] 3.3.4 输出拆解计划（哪些代码去哪个 feature）
+- [x] 3.3.1 分析 _staging 代码结构和依赖
+- [x] 3.3.2 识别需要替换的 fetch/axios 请求
+- [x] 3.3.3 识别需要替换的 hardcoded 样式
+- [x] 3.3.4 输出拆解计划（哪些代码去哪个 feature）
 
 **执行模型**: Claude
 **预估耗时**: 30 min
@@ -339,12 +339,12 @@ Output: 每个文件的目标位置、需要修改的点
 ---
 
 ### Task 3.4: 共享组件拆解
-- [ ] 3.4.1 从 _staging 提取 Button 样式 → `shared/components/Button.tsx`
-- [ ] 3.4.2 创建 `shared/components/Modal.tsx`（新建，参考设计稿样式）
-- [ ] 3.4.3 创建 `shared/components/Toast.tsx`（新建，Context 管理）
-- [ ] 3.4.4 创建 `shared/components/Skeleton.tsx`
-- [ ] 3.4.5 创建 `shared/components/EmptyState.tsx`
-- [ ] 3.4.6 替换所有 hardcoded 样式为 Tailwind
+- [x] 3.4.1 从 _staging 提取 Button 样式 → `shared/components/Button.tsx`
+- [x] 3.4.2 创建 `shared/components/Modal.tsx`（新建，参考设计稿样式）
+- [x] 3.4.3 创建 `shared/components/Toast.tsx`（新建，Context 管理）
+- [x] 3.4.4 创建 `shared/components/Skeleton.tsx`
+- [x] 3.4.5 创建 `shared/components/EmptyState.tsx`
+- [x] 3.4.6 替换所有 hardcoded 样式为 Tailwind
 
 **执行模型**: Claude
 **预估耗时**: 90 min
@@ -360,11 +360,11 @@ Success: 组件样式与设计稿一致，无 hardcoded 样式
 ---
 
 ### Task 3.5: 共享 Hooks 和 API Client
-- [ ] 3.5.1 创建 `shared/hooks/useBreakpoint.ts`
-- [ ] 3.5.2 创建 `shared/hooks/useJobPolling.ts`
-- [ ] 3.5.3 创建 `shared/hooks/useOptimisticUpdate.ts`
-- [ ] 3.5.4 创建 `shared/api/client.ts` - Axios 实例 + 拦截器
-- [ ] 3.5.5 创建 `shared/api/errorHandler.ts`
+- [x] 3.5.1 创建 `shared/hooks/useBreakpoint.ts`
+- [x] 3.5.2 创建 `shared/hooks/useJobPolling.ts`
+- [x] 3.5.3 创建 `shared/hooks/useOptimisticUpdate.ts`
+- [x] 3.5.4 创建 `shared/api/client.ts` - Axios 实例 + 拦截器
+- [x] 3.5.5 创建 `shared/api/errorHandler.ts`
 
 **执行模型**: Claude
 **预估耗时**: 60 min
@@ -380,9 +380,9 @@ Success: Hooks 可独立测试，无内存泄漏
 ---
 
 ### Task 3.6: 布局组件
-- [ ] 3.6.1 创建 `layouts/DesktopLayout.tsx` - 侧边栏 + 主区域
-- [ ] 3.6.2 创建 `layouts/MobileLayout.tsx` - 底部导航 + 抽屉
-- [ ] 3.6.3 创建 `layouts/index.ts` - 自动切换逻辑
+- [x] 3.6.1 创建 `layouts/DesktopLayout.tsx` - 侧边栏 + 主区域
+- [x] 3.6.2 创建 `layouts/MobileLayout.tsx` - 底部导航 + 抽屉
+- [x] 3.6.3 创建 `layouts/index.ts` - 自动切换逻辑
 
 **执行模型**: Claude
 **预估耗时**: 60 min
@@ -398,10 +398,10 @@ Success: 768px 以下显示 Mobile 布局
 ---
 
 ### Task 3.7: 路由骨架 + Happy Path
-- [ ] 3.7.1 安装 React Router v6
-- [ ] 3.7.2 配置路由：/ (Dashboard), /editor/:id, /history, /settings
-- [ ] 3.7.3 创建空壳页面组件（仅显示页面名称）
-- [ ] 3.7.4 验证 Happy Path：首页 → 上传 → 跳转编辑器 → 返回
+- [x] 3.7.1 安装 React Router v6
+- [x] 3.7.2 配置路由：/ (Dashboard), /editor/:id, /history, /settings
+- [x] 3.7.3 创建空壳页面组件（仅显示页面名称）
+- [x] 3.7.4 验证 Happy Path：首页 → 上传 → 跳转编辑器 → 返回
 
 **执行模型**: Claude
 **预估耗时**: 30 min
@@ -417,9 +417,9 @@ Success: 所有路由可访问，Happy Path 流程通畅
 ---
 
 ### Task 3.8: Phase 3 QA 交付物
-- [ ] 3.8.1 输出风险列表
-- [ ] 3.8.2 _staging 清洗完成度检查
-- [ ] 3.8.3 未处理的设计稿代码清单
+- [x] 3.8.1 输出风险列表
+- [x] 3.8.2 _staging 清洗完成度检查
+- [x] 3.8.3 未处理的设计稿代码清单
 
 **执行模型**: Claude
 **预估耗时**: 15 min
@@ -428,9 +428,9 @@ Success: 所有路由可访问，Happy Path 流程通畅
 ---
 
 ### Task 3.9: Phase 3 存档
-- [ ] 3.9.1 运行前端 lint + typecheck
-- [ ] 3.9.2 Git add + commit: `feat(frontend): 骨架目录结构 + 共享组件 + 路由`
-- [ ] 3.9.3 验证 Happy Path 可运行
+- [x] 3.9.1 运行前端 lint + typecheck
+- [x] 3.9.2 Git add + commit: `feat(frontend): 骨架目录结构 + 共享组件 + 路由`
+- [x] 3.9.3 验证 Happy Path 可运行
 
 **执行模型**: Claude
 **预估耗时**: 10 min
