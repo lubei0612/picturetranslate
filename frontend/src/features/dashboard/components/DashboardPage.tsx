@@ -4,9 +4,12 @@ import { UploadZone } from './UploadZone';
 import { ProjectList } from './ProjectList';
 import { useProjects } from '../hooks/useProjects';
 import { useUpload } from '../hooks/useUpload';
+import { PullToRefresh } from '@/shared/components';
+import { useIsMobile } from '@/shared/hooks';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { projects, loading, refresh } = useProjects({ demoMode: true });
   const { isUploading, upload, uploadFromUrl } = useUpload();
 
@@ -20,29 +23,41 @@ export const DashboardPage: React.FC = () => {
     navigate('/history');
   };
 
+  const content = (
+    <div className="max-w-5xl mx-auto">
+      {/* Upload Section */}
+      <section className="mb-6 md:mb-10">
+        <h2 className="text-base md:text-lg font-semibold text-gray-800 mb-3 md:mb-4">
+          开始新任务
+        </h2>
+        <UploadZone
+          onUpload={upload}
+          onUrlImport={uploadFromUrl}
+          isUploading={isUploading}
+        />
+      </section>
+
+      {/* Project List Section */}
+      <section>
+        <ProjectList
+          projects={projects.slice(0, isMobile ? 6 : 4)}
+          loading={loading}
+          onProjectClick={handleProjectClick}
+          onViewAll={handleViewAll}
+        />
+      </section>
+    </div>
+  );
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[#F8F9FA] p-4 md:p-8 overflow-y-auto">
-      <div className="max-w-5xl mx-auto">
-        {/* Upload Section */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">开始新任务</h2>
-          <UploadZone
-            onUpload={upload}
-            onUrlImport={uploadFromUrl}
-            isUploading={isUploading}
-          />
-        </section>
-
-        {/* Project List Section */}
-        <section>
-          <ProjectList
-            projects={projects.slice(0, 4)}
-            loading={loading}
-            onProjectClick={handleProjectClick}
-            onViewAll={handleViewAll}
-          />
-        </section>
-      </div>
+      {isMobile ? (
+        <PullToRefresh onRefresh={refresh}>
+          {content}
+        </PullToRefresh>
+      ) : (
+        content
+      )}
     </div>
   );
 };

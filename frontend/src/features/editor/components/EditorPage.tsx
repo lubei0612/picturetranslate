@@ -4,14 +4,17 @@ import { EditorHeader } from './EditorHeader';
 import { EditorToolbar } from './EditorToolbar';
 import { ImageViewer } from './ImageViewer';
 import { LayerPanel } from './LayerPanel';
+import { MobileEditor } from './MobileEditor';
 import { useLayers } from '../hooks/useLayers';
 import { useEditorState } from '../hooks/useEditorState';
 import { useToast } from '@/shared/components';
+import { useIsMobile } from '@/shared/hooks';
 
 export const EditorPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const toast = useToast();
+  const isMobile = useIsMobile();
 
   const {
     layers,
@@ -46,6 +49,22 @@ export const EditorPage: React.FC = () => {
     updateLayer(layerId, updates);
   };
 
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <MobileEditor
+        originalImage="https://picsum.photos/id/175/500/600"
+        translatedImage="https://picsum.photos/id/175/500/600?grayscale"
+        layers={layers}
+        selectedLayer={selectedLayer}
+        onLayerSelect={selectLayer}
+        onLayerUpdate={handleLayerUpdate}
+        onDownload={handleDownload}
+      />
+    );
+  }
+
+  // Desktop layout
   return (
     <div className="fixed inset-0 z-[100] bg-gray-100 flex flex-col">
       <EditorHeader

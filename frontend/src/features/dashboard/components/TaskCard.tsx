@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { LazyImage } from '@/shared/components';
 import type { TaskCardProps, Project, ProjectStatus } from '../types';
 
 export const TaskCard: React.FC<TaskCardProps> = ({ project, onClick }) => {
@@ -16,9 +17,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ project, onClick }) => {
     >
       <div className="p-4 flex space-x-4">
         {/* Thumbnail */}
-        <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative border border-gray-100">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative border border-gray-100">
           {project.thumbnail ? (
-            <img
+            <LazyImage
               src={project.thumbnail}
               alt={project.name}
               className="w-full h-full object-cover"
