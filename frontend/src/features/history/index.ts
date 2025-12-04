@@ -1,2 +1,5 @@
 // History Feature Module
-// 待 Phase 4 填充具体组件
+export { HistoryPage, HistoryTable } from './components';
+export { useHistory } from './hooks';
+export { historyApi } from './api';
+export type * from './types';

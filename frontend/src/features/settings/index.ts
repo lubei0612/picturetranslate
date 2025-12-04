@@ -1,2 +1,4 @@
 // Settings Feature Module
-// 待 Phase 4 填充具体组件
+export { SettingsPage, EngineSelector } from './components';
+export { useSettings, useEngines } from './hooks';
+export type * from './types';

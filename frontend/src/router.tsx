@@ -1,6 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ResponsiveLayout } from '@/layouts';
-import { DashboardPage, EditorPage, HistoryPage, SettingsPage } from '@/pages';
+import { DashboardPage } from '@/features/dashboard';
+import { EditorPage } from '@/features/editor';
+import { HistoryPage } from '@/features/history';
+import { SettingsPage } from '@/features/settings';
 
 export const router = createBrowserRouter([
   {

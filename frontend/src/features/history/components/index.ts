@@ -1,1 +1,2 @@
-// History Components - 待 Phase 4 填充
+export { HistoryPage } from './HistoryPage';
+export { HistoryTable } from './HistoryTable';

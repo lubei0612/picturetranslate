@@ -1,1 +1,1 @@
-// History API - 待 Phase 4 填充
+export { historyApi, type HistoryListParams } from './historyApi';

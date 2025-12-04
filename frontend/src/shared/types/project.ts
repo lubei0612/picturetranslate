@@ -10,6 +10,9 @@ export const enum ProjectStage {
   Completed = 'completed',
 }
 
+/** 项目状态枚举 */
+export type ProjectStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
 /** 项目信息 */
 export interface Project {
   /** 项目唯一标识 */
@@ -17,11 +20,17 @@ export interface Project {
   /** 项目名称 */
   name: string;
   /** 缩略图 URL */
-  thumbnail: string;
+  thumbnail?: string;
+  /** 项目状态 */
+  status: ProjectStatus;
   /** 当前阶段 */
-  currentStage: ProjectStage | 'translating' | 'editing' | 'completed';
+  stage?: string;
+  /** 源语言 */
+  sourceLang: string;
+  /** 目标语言 */
+  targetLang: string;
   /** 进度百分比 0-100 */
-  progress: number;
+  progress?: number;
   /** 创建时间 ISO 字符串 */
   createdAt: string;
   /** 更新时间 ISO 字符串 */

@@ -1,1 +1,1 @@
-// Editor API - 待 Phase 4 填充
+export { layerApi, type LayerUpdateRequest, type BatchUpdateRequest } from './layerApi';

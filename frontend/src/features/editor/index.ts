@@ -1,2 +1,5 @@
 // Editor Feature Module
-// 待 Phase 4 填充具体组件
+export { EditorPage } from './components';
+export { useLayers, useEditorState } from './hooks';
+export { layerApi } from './api';
+export type * from './types';

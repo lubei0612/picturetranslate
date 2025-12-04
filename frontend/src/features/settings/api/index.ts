@@ -1,1 +1,2 @@
-// Settings API - 待 Phase 4 填充
+// Settings uses shared API client for /engines endpoint
+export {};

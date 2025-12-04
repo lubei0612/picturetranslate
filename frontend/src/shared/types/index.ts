@@ -5,6 +5,7 @@
 // Project 相关
 export {
   ProjectStage,
+  type ProjectStatus,
   type Project,
   type ProjectListParams,
   type ProjectListResponse,

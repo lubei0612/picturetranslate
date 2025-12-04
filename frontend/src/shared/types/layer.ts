@@ -9,15 +9,21 @@ export type BoundingBox = [number, number, number, number];
 /** 图层样式 */
 export interface LayerStyle {
   /** 字体家族 */
-  fontFamily: string;
+  fontFamily?: string;
   /** 字体大小 (px) */
-  fontSize: number;
+  fontSize?: number;
   /** 字体颜色 (hex) */
-  fontColor: string;
+  fontColor?: string;
+  /** 文字颜色 (alias for fontColor) */
+  color?: string;
   /** 背景颜色 (hex, 可选) */
   backgroundColor?: string;
+  /** 字体粗细 */
+  fontWeight?: string;
+  /** 文字对齐 */
+  textAlign?: 'left' | 'center' | 'right';
   /** 旋转角度 (度) */
-  rotation: number;
+  rotation?: number;
 }
 
 /** 文字图层 */
