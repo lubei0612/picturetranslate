@@ -210,11 +210,11 @@ Success: 所有端点返回正确响应，Swagger 文档显示正常
 ## Phase 2: Gemini UI 设计
 
 ### Task 2.1: 组件树设计
-- [ ] 2.1.1 Dashboard 组件树（ProjectCard/Grid/UploadZone/FilterBar）
-- [ ] 2.1.2 Editor 组件树（ImageViewer/LayerList/LayerPanel/Toolbar）
-- [ ] 2.1.3 History 组件树（HistoryList/HistoryItem）
-- [ ] 2.1.4 Settings 组件树（EngineSelector/LanguageConfig）
-- [ ] 2.1.5 Shared 组件树（Button/Modal/Toast/Skeleton/EmptyState）
+- [x] 2.1.1 Dashboard 组件树（ProjectCard/Grid/UploadZone/FilterBar）
+- [x] 2.1.2 Editor 组件树（ImageViewer/LayerList/LayerPanel/Toolbar）
+- [x] 2.1.3 History 组件树（HistoryList/HistoryItem）
+- [x] 2.1.4 Settings 组件树（EngineSelector/LanguageConfig）
+- [x] 2.1.5 Shared 组件树（Button/Modal/Toast/Skeleton/EmptyState）
 
 **执行模型**: Gemini
 **预估耗时**: 60 min
@@ -230,10 +230,10 @@ Format: Markdown + Mermaid 图
 ---
 
 ### Task 2.2: 交互流程设计
-- [ ] 2.2.1 上传翻译流程（Happy Path）
-- [ ] 2.2.2 图层编辑流程
-- [ ] 2.2.3 历史浏览流程
-- [ ] 2.2.4 错误状态流程
+- [x] 2.2.1 上传翻译流程（Happy Path）
+- [x] 2.2.2 图层编辑流程
+- [x] 2.2.3 历史浏览流程
+- [x] 2.2.4 错误状态流程
 
 **执行模型**: Gemini
 **预估耗时**: 45 min
@@ -248,10 +248,10 @@ Output: 流程图 + 状态转换图
 ---
 
 ### Task 2.3: 响应式布局方案
-- [ ] 2.3.1 Desktop 布局（>= 1024px）
-- [ ] 2.3.2 Tablet 布局（768px - 1024px）
-- [ ] 2.3.3 Mobile 布局（< 768px）
-- [ ] 2.3.4 断点切换策略
+- [x] 2.3.1 Desktop 布局（>= 1024px）
+- [x] 2.3.2 Tablet 布局（768px - 1024px）
+- [x] 2.3.3 Mobile 布局（< 768px）
+- [x] 2.3.4 断点切换策略
 
 **执行模型**: Gemini
 **预估耗时**: 30 min
@@ -266,8 +266,8 @@ Output: 线框图 + 组件变形规则
 ---
 
 ### Task 2.4: Phase 2 存档
-- [ ] 2.4.1 将 Gemini 设计输出保存到 `.spec-workflow/specs/saas-ui-refactor/ui-design.md`
-- [ ] 2.4.2 Git add + commit: `docs(design): Gemini UI 组件树和交互流程设计`
+- [x] 2.4.1 将 Gemini 设计输出保存到 `.spec-workflow/specs/saas-ui-refactor/ui-design.md`
+- [x] 2.4.2 Git add + commit: `docs(design): Gemini UI 组件树和交互流程设计`
 
 **执行模型**: Gemini
 **预估耗时**: 10 min
