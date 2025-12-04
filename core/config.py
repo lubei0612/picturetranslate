@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
+        "http://localhost:4173",
         "http://localhost:5173",
+        "https://app.farmaxbeauty.shop",
     ]
 
     # File constraints
