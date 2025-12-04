@@ -7,8 +7,6 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
-from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.orm import Session
 
@@ -36,14 +34,8 @@ class CleanupService:
         if self._scheduler:
             return
 
-        jobstores = {"default": SQLAlchemyJobStore(url=settings.database_url)}
-        executors = {"default": ThreadPoolExecutor(max_workers=1)}
-        job_defaults = {"coalesce": True, "max_instances": 1, "misfire_grace_time": 3600}
-
         self._scheduler = AsyncIOScheduler(
-            jobstores=jobstores,
-            executors=executors,
-            job_defaults=job_defaults,
+            job_defaults={"coalesce": True, "max_instances": 1, "misfire_grace_time": 3600},
             timezone="Asia/Shanghai",
         )
 

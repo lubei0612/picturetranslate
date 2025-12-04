@@ -75,6 +75,10 @@ class StorageService:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
+    def _relative(self, path: Path) -> str:
+        """Return path relative to base_path."""
+        return str(path.relative_to(self.base_path))
+
     @staticmethod
     def _infer_extension(filename: Optional[str]) -> str:
         if not filename or "." not in filename:

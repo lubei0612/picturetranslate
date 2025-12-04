@@ -136,10 +136,12 @@ class JobQueueService:
         async with self._worker_lock:
             if self._worker_task and not self._worker_task.done():
                 return
+            logger.info("Starting background translation worker")
             loop = asyncio.get_running_loop()
             self._worker_task = loop.create_task(self._worker_loop())
 
     async def _worker_loop(self) -> None:
+        logger.info("Worker loop started")
         while True:
             try:
                 translation = await asyncio.to_thread(self._pull_pending_translation)
@@ -152,8 +154,10 @@ class JobQueueService:
                 await asyncio.sleep(self._poll_interval)
                 continue
 
+            logger.info("Processing translation: %s", translation.id)
             try:
                 await self._process_translation(translation)
+                logger.info("Translation completed: %s", translation.id)
             except Exception as exc:  # pragma: no cover - defensive logging
                 logger.exception("Translation worker error: job=%s translation=%s", translation.job_id, translation.id)
                 await asyncio.sleep(self._poll_interval)
@@ -178,8 +182,8 @@ class JobQueueService:
                         """
                     ),
                     {
-                        "processing": TranslationStatus.PROCESSING.value,
-                        "pending": TranslationStatus.PENDING.value,
+                        "processing": TranslationStatus.PROCESSING.name,
+                        "pending": TranslationStatus.PENDING.name,
                     },
                 ).mappings().first()
 
