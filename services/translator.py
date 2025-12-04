@@ -10,7 +10,7 @@ from PIL import Image, UnidentifiedImageError
 
 from core.config import settings
 from core.exceptions import TranslationError
-from processor import ImageTranslator
+from core.processor import ImageTranslator
 from utils.retry import retry_on_failure
 
 
