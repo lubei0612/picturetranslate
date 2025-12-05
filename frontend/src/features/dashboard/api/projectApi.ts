@@ -17,18 +17,70 @@ export interface JobCreateResponse {
 export interface TranslationRecord {
   id: string;
   job_id: string;
+  image_uuid?: string;
   source_lang: string;
   target_lang: string;
   status: string;
   created_at: string;
   original_url: string | null;
   result_url: string | null;
+  original_path?: string;
   is_demo: boolean;
+}
+
+interface HistoryResponse {
+  items: TranslationRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+const LANG_MAP: Record<string, string> = {
+  'zh-CN': '中文(简体)',
+  'zh': '中文(简体)',
+  'en': '英语',
+  'ja': '日语',
+  'ko': '韩语',
+  'de': '德语',
+  'es': '西班牙语',
+  'auto': '自动检测',
+};
+
+const STATUS_MAP: Record<string, string> = {
+  'done': 'completed',
+  'failed': 'failed',
+  'pending': 'pending',
+  'processing': 'processing',
+};
+
+function transformToProject(record: TranslationRecord): Project {
+  const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+  const baseUrl = apiBase.replace('/api', '');
+  
+  return {
+    id: record.id,
+    name: record.original_path?.split('/').pop() || `翻译_${record.id.slice(0, 8)}`,
+    thumbnail: record.original_url ? `${baseUrl}${record.original_url}` : undefined,
+    status: (STATUS_MAP[record.status] || record.status) as Project['status'],
+    sourceLang: LANG_MAP[record.source_lang] || record.source_lang,
+    targetLang: LANG_MAP[record.target_lang] || record.target_lang,
+    createdAt: record.created_at,
+    updatedAt: record.created_at,
+    isDemo: record.is_demo,
+  };
 }
 
 export const projectApi = {
   list: async (params?: ProjectListParams): Promise<PaginatedResponse<Project>> => {
-    return api.get<PaginatedResponse<Project>>('/history', { params });
+    const response = await api.get<HistoryResponse>('/history', { params });
+    return {
+      items: response.items.map(transformToProject),
+      total: response.total,
+      page: response.page,
+      pageSize: response.pageSize,
+      totalPages: response.totalPages,
+    };
   },
 
   get: async (id: string): Promise<TranslationRecord> => {

@@ -21,7 +21,7 @@ export const EditorPage: React.FC = () => {
   
   const isDemo = settings.demoMode || id?.startsWith('demo');
   
-  const { translation, loading: translationLoading } = useTranslation({
+  const { translation, originalImageUrl, resultImageUrl, loading: translationLoading } = useTranslation({
     translationId: id || '',
     demoMode: isDemo,
   });
@@ -51,8 +51,35 @@ export const EditorPage: React.FC = () => {
     navigate('/');
   };
 
-  const handleDownload = () => {
-    toast.info('下载功能开发中...');
+  const handleDownload = async () => {
+    if (!resultImageUrl || isDemo) {
+      toast.info('Demo 模式无法下载');
+      return;
+    }
+    
+    try {
+      toast.info('正在准备下载...');
+      const response = await fetch(resultImageUrl);
+      if (!response.ok) throw new Error('下载失败');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const filename = translation?.original_path?.split('/').pop()?.replace(/\.[^.]+$/, '') || id || 'translated';
+      link.download = `${filename}_translated.png`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('下载完成');
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('下载失败，请重试');
+    }
   };
 
   const handleToolChange = (tool: typeof activeTool) => {
@@ -67,8 +94,8 @@ export const EditorPage: React.FC = () => {
     updateLayer(layerId, updates);
   };
 
-  const originalImage = translation?.original_url || 'https://picsum.photos/id/175/500/600';
-  const translatedImage = translation?.result_url || 'https://picsum.photos/id/175/500/600?grayscale';
+  const originalImage = originalImageUrl;
+  const translatedImage = resultImageUrl;
 
   if (translationLoading) {
     return (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { projectApi, TranslationRecord } from '@/features/dashboard/api/projectApi';
 
 interface UseTranslationOptions {
@@ -8,6 +8,8 @@ interface UseTranslationOptions {
 
 interface UseTranslationResult {
   translation: TranslationRecord | null;
+  originalImageUrl: string;
+  resultImageUrl: string;
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
@@ -24,6 +26,14 @@ const DEMO_TRANSLATION: TranslationRecord = {
   result_url: 'https://picsum.photos/id/175/500/600?grayscale',
   is_demo: true,
 };
+
+function buildImageUrl(path: string | null): string {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+  const baseUrl = apiBase.replace('/api', '');
+  return `${baseUrl}${path}`;
+}
 
 export function useTranslation({ translationId, demoMode = false }: UseTranslationOptions): UseTranslationResult {
   const [translation, setTranslation] = useState<TranslationRecord | null>(null);
@@ -62,8 +72,20 @@ export function useTranslation({ translationId, demoMode = false }: UseTranslati
     fetchTranslation();
   }, [fetchTranslation]);
 
+  const originalImageUrl = useMemo(() => {
+    if (!translation) return 'https://picsum.photos/id/175/500/600';
+    return buildImageUrl(translation.original_url);
+  }, [translation]);
+
+  const resultImageUrl = useMemo(() => {
+    if (!translation) return 'https://picsum.photos/id/175/500/600?grayscale';
+    return buildImageUrl(translation.result_url);
+  }, [translation]);
+
   return {
     translation,
+    originalImageUrl,
+    resultImageUrl,
     loading,
     error,
     refresh: fetchTranslation,
