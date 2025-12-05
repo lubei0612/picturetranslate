@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   defaultTargetLang: 'zh-CN',
   defaultEngine: 'aliyun',
   autoInpaint: true,
-  demoMode: true,
+  demoMode: false,
 };
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
