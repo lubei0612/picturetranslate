@@ -23,14 +23,14 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
   return (
     <aside className="w-[360px] bg-white border-l border-gray-200 flex flex-col overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 shrink-0">
+      <div className="flex p-2 gap-2 shrink-0">
         <button
           onClick={() => onTabChange('settings')}
           className={`
-            flex-1 py-3 text-sm font-medium transition-colors
+            flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors
             ${activeTab === 'settings'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-gray-500 hover:bg-gray-100'
             }
           `}
         >
@@ -39,10 +39,10 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
         <button
           onClick={() => onTabChange('layers')}
           className={`
-            flex-1 py-3 text-sm font-medium transition-colors
+            flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors
             ${activeTab === 'layers'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-gray-500 hover:bg-gray-100'
             }
           `}
         >

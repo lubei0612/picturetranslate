@@ -22,7 +22,7 @@ router = APIRouter(tags=["history"])
 @router.get("/history")
 async def list_history(
     page: int = Query(1, ge=1),
-    limit: int = Query(1, ge=1, le=100),
+    limit: int = Query(20, ge=1, le=100),
     source_lang: Optional[str] = Query(None),
     target_lang: Optional[str] = Query(None),
     date_from: Optional[datetime] = Query(None),

@@ -299,7 +299,7 @@ async def test_history_endpoints_use_service():
         list_resp = await client.get("/api/history")
         assert list_resp.status_code == HTTP_200_OK
         payload = list_resp.json()
-        assert payload["total"] == 1
+        assert payload["total"] == 2
         assert payload["items"][0]["id"] == "rec-1"
 
         detail_resp = await client.get("/api/history/rec-1")

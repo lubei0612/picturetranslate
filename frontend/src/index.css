@@ -99,8 +99,7 @@ label span {
   margin-bottom: 0.35rem;
 }
 
-select,
-button {
+select {
   width: 100%;
   font-size: 1rem;
   padding: 0.7rem 0.85rem;
@@ -112,14 +111,10 @@ select {
   background: #fff;
 }
 
-button {
-  margin-top: 1rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
+/* 
+ * 注意：不再为所有 button 设置全局蓝色背景样式
+ * 使用 Tailwind 或 Button 组件来控制按钮样式
+ */
 
 button:disabled {
   opacity: 0.7;

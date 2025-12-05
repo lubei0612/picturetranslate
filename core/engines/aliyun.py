@@ -169,8 +169,14 @@ class AliyunEngine(TranslateEngine):
         img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
         ext = {"needEditorData": "true"}
-        if protect_product is not None:
-            ext["protectProduct"] = "true" if protect_product else "false"
+        # ignoreEntityRecognize 参数说明（仅对 e-commerce 领域有效）：
+        # - "false"（默认）: 自动检测商品主体，主体上的文字不翻译（保护商品）
+        # - "true": 忽略主体检测，所有文字都翻译
+        # protect_product=True 表示要保护商品，所以 ignoreEntityRecognize 应该是 "false"
+        if protect_product is False:
+            # 用户明确要求翻译商品主体上的文字
+            ext["ignoreEntityRecognize"] = "true"
+        # 默认使用阿里云的默认行为（false），自动保护商品主体
 
         request = models.TranslateImageRequest(
             source_language=source_lang,
@@ -183,11 +189,12 @@ class AliyunEngine(TranslateEngine):
         runtime = util_models.RuntimeOptions(read_timeout=API_TIMEOUT, connect_timeout=30000)
 
         logger.info(
-            "调用阿里云翻译 API: %s -> %s field=%s postprocess=%s",
+            "调用阿里云翻译 API: %s -> %s field=%s postprocess=%s protectProduct=%s",
             source_lang,
             target_lang,
             field,
             enable_postprocess,
+            "false" if ext.get("ignoreEntityRecognize") == "true" else "true (默认)",
         )
 
         response = self.client.translate_image_with_options(request, runtime)
@@ -198,13 +205,36 @@ class AliyunEngine(TranslateEngine):
         data = body.data
         layers: list[dict[str, Any]] = []
 
-        if enable_postprocess and data.template_json and data.in_painting_url:
-            logger.info("启用后处理优化渲染文字图层")
+        # 电商图片直接使用阿里云最终结果，保留商品主体文字
+        # 后处理会导致 in_painting_url 擦除所有文字（包括商品主体）
+        use_final_image = field == "e-commerce" or not enable_postprocess
+        
+        if not use_final_image and data.template_json and data.in_painting_url:
+            logger.info("启用后处理优化渲染文字图层（通用图片）")
             processed_image, layers = self._postprocess(data.template_json, data.in_painting_url)
             image_result = self._to_png_bytes(processed_image)
         else:
-            logger.info("使用阿里云生成的最终图片")
+            logger.info("使用阿里云生成的最终图片（保留商品主体文字）")
             image_result = self._download_result(data.final_image_url)
+            # 从 template_json 提取图层信息供编辑器使用
+            if data.template_json:
+                try:
+                    template = json.loads(data.template_json)
+                    for child in template.get("children", []):
+                        if child.get("type") == "text" and child.get("label") == "element":
+                            layers.append({
+                                "originalText": child.get("ocrContent", ""),
+                                "translatedText": child.get("content", ""),
+                                "bbox": [
+                                    float(child.get("left", 0)),
+                                    float(child.get("top", 0)),
+                                    float(child.get("width", 0)),
+                                    float(child.get("height", 0)),
+                                ],
+                                "style": self._extract_style(child),
+                            })
+                except Exception as e:
+                    logger.warning("解析 template_json 失败: %s", e)
 
         metadata: Mapping[str, Any] = {
             "requestId": body.request_id,
