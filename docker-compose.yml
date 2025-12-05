@@ -30,6 +30,12 @@ services:
     restart: unless-stopped
     ports:
       - "4173:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.picturetranslate-frontend.rule=Host(`app.farmaxbeauty.shop`)"
+      - "traefik.http.routers.picturetranslate-frontend.entrypoints=websecure"
+      - "traefik.http.routers.picturetranslate-frontend.tls=true"
+      - "traefik.http.services.picturetranslate-frontend.loadbalancer.server.port=80"
     depends_on:
       api:
         condition: service_healthy
