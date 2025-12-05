@@ -1,20 +1,82 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { UploadCloud, Link as LinkIcon, ArrowRight, Loader2, X, Play } from 'lucide-react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
+import { UploadCloud, Link as LinkIcon, ArrowRight, Loader2, X, Play, AlertCircle } from 'lucide-react';
 import { Button } from '@/shared/components';
 import type { UploadZoneProps, UploadOptions } from '../types';
+
+// 阿里云图片翻译支持的语言配置
+const SOURCE_LANGUAGES = [
+  { code: 'zh', label: '中文' },
+  { code: 'en', label: '英语' },
+];
+
+// 目标语言（从中文翻译）
+const TARGET_LANGUAGES_FROM_ZH = [
+  { code: 'en', label: '英语' },
+  { code: 'ja', label: '日语' },
+  { code: 'ko', label: '韩语' },
+  { code: 'zh-tw', label: '繁体中文' },
+  { code: 'ru', label: '俄语' },
+  { code: 'es', label: '西班牙语' },
+  { code: 'fr', label: '法语' },
+  { code: 'de', label: '德语' },
+  { code: 'it', label: '意大利语' },
+  { code: 'pt', label: '葡萄牙语' },
+  { code: 'nl', label: '荷兰语' },
+  { code: 'pl', label: '波兰语' },
+  { code: 'tr', label: '土耳其语' },
+  { code: 'th', label: '泰语' },
+  { code: 'vi', label: '越南语' },
+  { code: 'id', label: '印尼语' },
+  { code: 'ms', label: '马来语' },
+];
+
+// 目标语言（从英语翻译）
+const TARGET_LANGUAGES_FROM_EN = [
+  { code: 'zh', label: '中文' },
+  { code: 'ja', label: '日语' },
+  { code: 'ko', label: '韩语' },
+  { code: 'ru', label: '俄语' },
+  { code: 'es', label: '西班牙语' },
+  { code: 'fr', label: '法语' },
+  { code: 'de', label: '德语' },
+  { code: 'it', label: '意大利语' },
+  { code: 'pt', label: '葡萄牙语' },
+  { code: 'nl', label: '荷兰语' },
+  { code: 'pl', label: '波兰语' },
+  { code: 'tr', label: '土耳其语' },
+  { code: 'th', label: '泰语' },
+  { code: 'vi', label: '越南语' },
+  { code: 'id', label: '印尼语' },
+  { code: 'ms', label: '马来语' },
+];
 
 export const UploadZone: React.FC<UploadZoneProps> = ({
   onUpload,
   onUrlImport,
   isUploading = false,
 }) => {
-  const [sourceLang, setSourceLang] = useState('auto');
-  const [targetLang, setTargetLang] = useState('zh-CN');
+  const [sourceLang, setSourceLang] = useState('zh');
+  const [targetLang, setTargetLang] = useState('en');
   const [imageUrl, setImageUrl] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 根据源语言动态获取目标语言列表
+  const targetLanguages = useMemo(() => {
+    return sourceLang === 'en' ? TARGET_LANGUAGES_FROM_EN : TARGET_LANGUAGES_FROM_ZH;
+  }, [sourceLang]);
+
+  // 当源语言变化时，重置目标语言为列表第一项
+  const handleSourceLangChange = useCallback((newSourceLang: string) => {
+    setSourceLang(newSourceLang);
+    const newTargets = newSourceLang === 'en' ? TARGET_LANGUAGES_FROM_EN : TARGET_LANGUAGES_FROM_ZH;
+    // 如果当前目标语言不在新列表中，重置为第一项
+    if (!newTargets.find(t => t.code === targetLang)) {
+      setTargetLang(newTargets[0].code);
+    }
+  }, [targetLang]);
 
   const options: UploadOptions = { sourceLang, targetLang };
 
@@ -103,19 +165,23 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
           </div>
 
           {/* Language Selection */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col items-center gap-3 mb-6">
+            {/* 提示信息 */}
+            <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>请正确选择源语言，翻译质量会更好</span>
+            </div>
+            
             <div className="flex items-center space-x-2">
               <select
                 value={sourceLang}
-                onChange={(e) => setSourceLang(e.target.value)}
+                onChange={(e) => handleSourceLangChange(e.target.value)}
                 className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 disabled={isUploading}
               >
-                <option value="auto">自动检测语言</option>
-                <option value="zh-CN">中文(简体)</option>
-                <option value="en">英语</option>
-                <option value="ja">日语</option>
-                <option value="ko">韩语</option>
+                {SOURCE_LANGUAGES.map(lang => (
+                  <option key={lang.code} value={lang.code}>{lang.label}</option>
+                ))}
               </select>
 
               <ArrowRight className="w-4 h-4 text-gray-400" />
@@ -126,12 +192,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
                 className="bg-blue-50 border border-blue-500 text-blue-700 text-sm rounded-lg px-3 py-2 font-medium focus:ring-blue-500 focus:border-blue-500"
                 disabled={isUploading}
               >
-                <option value="zh-CN">中文(简体)</option>
-                <option value="en">英语</option>
-                <option value="ja">日语</option>
-                <option value="ko">韩语</option>
-                <option value="de">德语</option>
-                <option value="es">西班牙语</option>
+                {targetLanguages.map(lang => (
+                  <option key={lang.code} value={lang.code}>{lang.label}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -195,25 +258,29 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
             <h3 className="text-base font-medium text-gray-900 mb-1">
               {isUploading ? '正在上传...' : '点击或拖拽图片到此处'}
             </h3>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500 mb-4">
               支持 JPG, PNG, WebP (最大 10MB)
             </p>
 
             {/* Language Selection */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-col items-center gap-3">
+              {/* 提示信息 */}
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg text-xs">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>请正确选择源语言，翻译质量会更好</span>
+              </div>
+              
               <div className="flex items-center space-x-2">
                 <select
                   value={sourceLang}
-                  onChange={(e) => setSourceLang(e.target.value)}
+                  onChange={(e) => handleSourceLangChange(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   disabled={isUploading}
                 >
-                  <option value="auto">自动检测语言</option>
-                  <option value="zh-CN">中文(简体)</option>
-                  <option value="en">英语</option>
-                  <option value="ja">日语</option>
-                  <option value="ko">韩语</option>
+                  {SOURCE_LANGUAGES.map(lang => (
+                    <option key={lang.code} value={lang.code}>{lang.label}</option>
+                  ))}
                 </select>
 
                 <ArrowRight className="w-4 h-4 text-gray-400" />
@@ -225,12 +292,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
                   className="bg-blue-50 border border-blue-500 text-blue-700 text-sm rounded-lg px-3 py-2 font-medium focus:ring-blue-500 focus:border-blue-500"
                   disabled={isUploading}
                 >
-                  <option value="zh-CN">中文(简体)</option>
-                  <option value="en">英语</option>
-                  <option value="ja">日语</option>
-                  <option value="ko">韩语</option>
-                  <option value="de">德语</option>
-                  <option value="es">西班牙语</option>
+                  {targetLanguages.map(lang => (
+                    <option key={lang.code} value={lang.code}>{lang.label}</option>
+                  ))}
                 </select>
               </div>
             </div>
