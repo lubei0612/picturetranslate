@@ -32,7 +32,7 @@ FALLBACK_FONTS = [
 ]
 
 DARK_BLUE = (25, 45, 95)
-MAX_DIMENSION = 2048
+# 阿里云图片翻译 API 支持最大 8192px，使用配置文件中的设置
 API_TIMEOUT = 60000
 
 
@@ -260,12 +260,22 @@ class AliyunEngine(TranslateEngine):
         return image.convert("RGB") if image.mode in ("RGBA", "P") else image
 
     def _resize_if_needed(self, image: Image.Image) -> Image.Image:
+        """根据阿里云 API 限制调整图片尺寸（最大 8192px，长宽比 < 10:1）"""
         width, height = image.size
-        if width <= MAX_DIMENSION and height <= MAX_DIMENSION:
+        max_dim = settings.MAX_DIMENSION  # 默认 8192
+        
+        # 检查长宽比限制（阿里云要求 < 10:1）
+        aspect_ratio = max(width, height) / max(min(width, height), 1)
+        if aspect_ratio >= 10:
+            logger.warning("图片长宽比 %.1f:1 超过阿里云限制 10:1，可能翻译失败", aspect_ratio)
+        
+        # 只有超过最大尺寸才缩放
+        if width <= max_dim and height <= max_dim:
             return image
-        ratio = min(MAX_DIMENSION / width, MAX_DIMENSION / height)
+        
+        ratio = min(max_dim / width, max_dim / height)
         new_size = (int(width * ratio), int(height * ratio))
-        logger.info("缩放图片: %sx%s -> %sx%s", width, height, *new_size)
+        logger.info("缩放图片: %sx%s -> %sx%s (超过 %spx 限制)", width, height, *new_size, max_dim)
         return image.resize(new_size, Image.Resampling.LANCZOS)
 
     def _postprocess(self, template_json: str, in_painting_url: str) -> tuple[Image.Image, list[dict[str, Any]]]:
