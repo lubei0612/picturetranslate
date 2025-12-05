@@ -19,6 +19,8 @@ services:
       - ./data:/app/data
       - ./storage:/app/storage
       - ./backups:/app/backups
+    networks:
+      - appnet
 
   frontend:
     build:
@@ -39,5 +41,13 @@ services:
     depends_on:
       api:
         condition: service_healthy
+    networks:
+      appnet:
+        aliases:
+          - api
+          - picturetranslate-api
     environment:
       - VITE_SENTRY_DSN=${VITE_SENTRY_DSN:-}
+
+networks:
+  appnet:
