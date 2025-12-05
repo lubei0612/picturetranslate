@@ -27,8 +27,18 @@ def test_cache_service_set_get_and_ttl(monkeypatch):
 
 def test_translator_service_returns_bytes(monkeypatch):
     class FakeTranslator:
-        def translate(self, image, source_lang, target_lang, field, enable_postprocess):  # type: ignore[override]
-            _ = (image, source_lang, target_lang, field, enable_postprocess)
+        def translate(
+            self,
+            image,
+            source_lang,
+            target_lang,
+            field,
+            enable_postprocess,
+            *,
+            protect_product=None,
+            engine=None,
+        ):  # type: ignore[override]
+            _ = (image, source_lang, target_lang, field, enable_postprocess, protect_product, engine)
             return Image.new("RGB", (16, 16), color="green")
 
     service = TranslatorService()

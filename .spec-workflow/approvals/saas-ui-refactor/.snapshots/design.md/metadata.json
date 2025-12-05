@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/saas-ui-refactor/design.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-04T12:25:35.434Z",
+      "trigger": "initial",
+      "approvalId": "approval_1764851135430_b147xna4t",
+      "approvalTitle": "Design: 三套方案对比 + 架构设计"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-04T12:25:40.719Z",
+      "trigger": "approved",
+      "approvalId": "approval_1764851135430_b147xna4t",
+      "approvalTitle": "Design: 三套方案对比 + 架构设计"
+    }
+  ]
+}

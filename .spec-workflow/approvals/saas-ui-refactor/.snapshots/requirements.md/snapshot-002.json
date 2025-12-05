@@ -1,0 +1,16 @@
+{
+  "id": "snapshot_1764851076137_75o7j1fs7",
+  "approvalId": "approval_1764850609567_emadkrmwc",
+  "approvalTitle": "Requirements: SaaS UI 重构与后端增强",
+  "version": 2,
+  "timestamp": "2025-12-04T12:24:36.137Z",
+  "trigger": "approved",
+  "status": "pending",
+  "content": "# Requirements: SaaS UI 重构与后端增强\n\n## 概述\n将现有 MVP 前端重构为专业 SaaS 级别界面，同时增强后端多引擎支持、文字图层编辑等功能。\n\n---\n\n## REQ-1: 前端架构重构 (Feature Slicing)\n**优先级**: P0\n\n### REQ-1.1 目录结构垂直切分\n- 按功能领域组织：`features/dashboard|editor|history|settings`\n- 共享层：`shared/components|hooks|utils|types`\n- 布局层：`layouts/Desktop|Mobile`\n\n### REQ-1.2 单向依赖规则\n- UI 层只调用 Hooks/Service\n- Hooks 层处理状态和数据转换\n- API 层仅负责 HTTP 通信\n\n---\n\n## REQ-2: UI 复刻设计稿\n**优先级**: P0\n\n### REQ-2.1 Dashboard 模块\n- 项目卡片网格展示\n- 批量上传入口\n- 筛选/搜索功能\n- 空状态引导\n\n### REQ-2.2 Editor 模块\n- 双栏布局（原图/译图）\n- 文字图层列表\n- 图层属性面板（字体/颜色/大小）\n- 裁剪/消除笔工具\n- 撤销/重做/保存按钮\n\n### REQ-2.3 History 模块\n- 时间线列表\n- 缩略图预览\n- 批量删除\n\n### REQ-2.4 Settings 模块\n- 翻译引擎选择\n- 默认语言对配置\n- Demo 模式开关\n\n---\n\n## REQ-3: H5 移动端适配\n**优先级**: P1\n\n### REQ-3.1 响应式布局\n- Breakpoint: 768px\n- Mobile 抽屉式导航\n- 触摸手势支持\n\n### REQ-3.2 性能优化\n- 图片懒加载\n- 虚拟滚动（大列表）\n\n---\n\n## REQ-4: 后端多引擎策略模式\n**优先级**: P0\n\n### REQ-4.1 引擎抽象层\n- `TranslateEngine` 接口定义\n- 引擎注册表 + 工厂模式\n- 熔断/重试机制\n\n### REQ-4.2 引擎实现\n- 阿里云翻译引擎（现有）\n- DeepL 引擎（新增）\n- Google Translate 引擎（新增）\n\n### REQ-4.3 运行时切换\n- `GET /api/engines` 返回可用列表\n- 请求级引擎选择\n- 自动降级策略\n\n---\n\n## REQ-5: 文字图层 API\n**优先级**: P0\n\n### REQ-5.1 数据模型\n- `text_layers` 表（外键 → translation）\n- bbox、原文、译文、样式 JSON\n\n### REQ-5.2 API 端点\n- `GET /api/translations/{id}/layers` 获取图层列表\n- `PATCH /api/layers/{id}` 更新单个图层（乐观锁）\n- `POST /api/layers/batch` 批量更新\n\n---\n\n## REQ-6: 图像编辑 API\n**优先级**: P1\n\n### REQ-6.1 裁剪功能\n- `POST /api/images/{id}/crop` 异步裁剪\n- 返回 job_id 供轮询\n\n### REQ-6.2 消除笔功能\n- `POST /api/images/{id}/inpaint` 异步消除\n- Mask 图片上传\n\n---\n\n## REQ-7: Demo 模式\n**优先级**: P2\n\n### REQ-7.1 数据混合\n- 真实数据 + Demo 数据统一分页\n- `isDemo` 标记区分\n\n### REQ-7.2 环境控制\n- `DEMO_MODE=true` 环境变量\n- 视图/缓存优化\n\n---\n\n## 验收标准\n- [ ] 前端通过 Feature Slicing 架构审查\n- [ ] 所有 UI 与设计稿像素级对齐\n- [ ] 768px 以下正常显示移动端布局\n- [ ] 新增 API 100% 单元测试覆盖\n- [ ] TextLayer 并发编辑无数据丢失\n- [ ] 引擎降级场景可正常回退\n",
+  "fileStats": {
+    "size": 2845,
+    "lines": 132,
+    "lastModified": "2025-12-04T12:12:48.666Z"
+  },
+  "comments": []
+}

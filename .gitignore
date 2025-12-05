@@ -33,3 +33,7 @@ frontend/vite.config.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Data files
+data/
+storage/

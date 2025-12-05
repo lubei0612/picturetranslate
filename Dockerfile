@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
 
 # 系统依赖
@@ -15,6 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 应用代码
 COPY . .
+
+# 创建持久化目录
+RUN mkdir -p /app/data /app/storage /app/backups
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

@@ -9,6 +9,8 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import Response
 
 from api.dependencies import get_cache_service, get_translator_service
+from core.config import settings
+from core.engines import EngineRegistry
 from core.exceptions import ValidationError
 from services.cache import CacheService
 from services.translator import TranslatorService
@@ -16,16 +18,18 @@ from utils.image import compute_hash, validate_image
 
 
 router = APIRouter(tags=["translate"])
-executor = ThreadPoolExecutor(max_workers=4)
+executor = ThreadPoolExecutor(max_workers=settings.THREAD_POOL_MAX_WORKERS)
 
 
 @router.post("/translate", response_class=Response)
 async def translate_image(
     file: UploadFile = File(...),
-    source_lang: str = Form("auto"),
-    target_lang: str = Form("zh"),
+    source_lang: str = Form(settings.DEFAULT_SOURCE_LANG),
+    target_lang: str = Form(settings.DEFAULT_TARGET_LANG),
     field: str = Form("e-commerce"),
     enable_postprocess: bool = Form(True),
+    protect_product: bool = Form(settings.PROTECT_PRODUCT_DEFAULT),
+    engine: str | None = Form(None),
     translator: TranslatorService = Depends(get_translator_service),
     cache: CacheService = Depends(get_cache_service),
 ):
@@ -38,7 +42,22 @@ async def translate_image(
     if not is_valid:
         raise ValidationError(message)
 
-    cache_key = compute_hash(content, source_lang, target_lang, field)
+    selected_engine = None
+    if engine:
+        known_engines = {name.lower(): name for name in EngineRegistry.list_registered()}
+        normalized = engine.strip().lower()
+        if normalized not in known_engines:
+            raise ValidationError("指定的翻译引擎不存在")
+        selected_engine = known_engines[normalized]
+
+    cache_key = compute_hash(
+        content,
+        source_lang,
+        target_lang,
+        field,
+        protect_product=protect_product,
+        engine=selected_engine,
+    )
     cached = cache.get(cache_key)
     if cached:
         return Response(content=cached, media_type="image/png")
@@ -46,12 +65,15 @@ async def translate_image(
     loop = asyncio.get_running_loop()
     result: bytes = await loop.run_in_executor(
         executor,
-        translator.translate,
-        content,
-        source_lang,
-        target_lang,
-        field,
-        enable_postprocess,
+        lambda: translator.translate(
+            content,
+            source_lang,
+            target_lang,
+            field,
+            enable_postprocess,
+            protect_product=protect_product,
+            engine=selected_engine,
+        ),
     )
 
     cache.set(cache_key, result)

@@ -1,0 +1,47 @@
+import type { HistoryItem } from '../types';
+
+export const MOCK_HISTORY: HistoryItem[] = [
+  {
+    id: '1',
+    date: '2024-12-02T14:20:00Z',
+    projectName: '智能运动手表_主图_CN.jpg',
+    action: '翻译 (中文 → 英语)',
+    result: 'success',
+    projectId: '1',
+    isDemo: true,
+  },
+  {
+    id: '2',
+    date: '2024-12-02T10:15:00Z',
+    projectName: '车载手机支架_场景图.jpg',
+    action: '翻译 (中文 → 西班牙语)',
+    result: 'success',
+    projectId: '2',
+    isDemo: true,
+  },
+  {
+    id: '3',
+    date: '2024-12-01T18:30:00Z',
+    projectName: '宠物喂食器_尺寸图.png',
+    action: '翻译 (中文 → 德语)',
+    result: 'success',
+    projectId: '3',
+    isDemo: true,
+  },
+  {
+    id: '4',
+    date: '2024-12-01T16:20:00Z',
+    projectName: '错误文件_测试.txt',
+    action: '上传分析',
+    result: 'failed',
+    resultMessage: '格式错误',
+  },
+  {
+    id: '5',
+    date: '2024-11-30T09:00:00Z',
+    projectName: '女士瑜伽服_尺码表.jpg',
+    action: '翻译 (中文 → 日语)',
+    result: 'success',
+    projectId: '5',
+  },
+];

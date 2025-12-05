@@ -8,18 +8,24 @@ services:
     environment:
       - ALI_ACCESS_KEY_ID=${ALI_ACCESS_KEY_ID}
       - ALI_ACCESS_KEY_SECRET=${ALI_ACCESS_KEY_SECRET}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - SENTRY_DSN=${SENTRY_DSN:-}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    volumes:
+      - ./data:/app/data
+      - ./storage:/app/storage
+      - ./backups:/app/backups
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-https://api.farmaxbeauty.shop}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     container_name: picturetranslate-web
     restart: unless-stopped
     ports:
@@ -27,3 +33,5 @@ services:
     depends_on:
       api:
         condition: service_healthy
+    environment:
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN:-}

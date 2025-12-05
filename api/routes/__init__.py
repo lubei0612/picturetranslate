@@ -1,3 +1,3 @@
 """Route modules."""
 
-__all__ = ["health", "translate"]
+__all__ = ["health", "translate", "jobs", "history", "engines", "layers"]
