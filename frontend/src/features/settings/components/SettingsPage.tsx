@@ -1,9 +1,9 @@
 import React from 'react';
 import { Settings, Globe, Cpu, Save, RotateCcw } from 'lucide-react';
 import { EngineSelector } from './EngineSelector';
-import { useSettings } from '../hooks/useSettings';
 import { useEngines } from '../hooks/useEngines';
 import { Button } from '@/shared/components';
+import { useGlobalSettings } from '@/shared/context';
 
 const LANGUAGE_OPTIONS = [
   { code: 'zh-CN', name: '中文 (简体)' },
@@ -15,7 +15,7 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export const SettingsPage: React.FC = () => {
-  const { settings, saving, updateSetting, saveSettings, resetSettings } = useSettings();
+  const { settings, saving, updateSetting, saveSettings, resetSettings } = useGlobalSettings();
   const { engines, loading: enginesLoading } = useEngines({ demoMode: settings.demoMode });
 
   return (

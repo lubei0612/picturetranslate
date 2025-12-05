@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     # Environment & monitoring
     ENVIRONMENT: Literal["development", "staging", "production"] = "development"
     DEBUG: bool = False
+    DEMO_MODE: bool = False
     SENTRY_DSN: Optional[str] = None
 
     # Aliyun credentials

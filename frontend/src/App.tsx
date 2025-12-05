@@ -1,11 +1,14 @@
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import { ToastProvider } from '@/shared/components';
+import { SettingsProvider } from '@/shared/context';
 
 export function App() {
   return (
     <ToastProvider>
-      <RouterProvider router={router} />
+      <SettingsProvider>
+        <RouterProvider router={router} />
+      </SettingsProvider>
     </ToastProvider>
   );
 }

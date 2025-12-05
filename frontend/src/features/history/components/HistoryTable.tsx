@@ -5,9 +5,11 @@ import type { HistoryItem } from '../types';
 interface HistoryTableProps {
   items: HistoryItem[];
   onItemClick?: (item: HistoryItem) => void;
+  onDelete?: (item: HistoryItem) => void;
+  deletingId?: string | null;
 }
 
-export const HistoryTable: React.FC<HistoryTableProps> = ({ items, onItemClick }) => {
+export const HistoryTable: React.FC<HistoryTableProps> = ({ items, onItemClick, onDelete, deletingId }) => {
   const formatDate = (dateStr: string) => {
     try {
       return new Date(dateStr).toLocaleString('zh-CN', {
@@ -42,6 +44,11 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ items, onItemClick }
             <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">
               详情
             </th>
+            {onDelete && (
+              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">
+                操作
+              </th>
+            )}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -51,7 +58,17 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ items, onItemClick }
                 {formatDate(item.date)}
               </td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                {item.projectName}
+                <div className="flex items-center gap-2">
+                  <span>{item.projectName}</span>
+                  {item.isDemo && (
+                    <span
+                      data-testid="history-demo-badge"
+                      className="text-[10px] uppercase tracking-wide font-semibold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full"
+                    >
+                      Demo
+                    </span>
+                  )}
+                </div>
               </td>
               <td className="px-6 py-4 text-sm text-gray-600">
                 {item.action}
@@ -79,6 +96,18 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ items, onItemClick }
                   </button>
                 )}
               </td>
+              {onDelete && (
+                <td className="px-6 py-4 text-right">
+                  <button
+                    data-testid="history-delete-button"
+                    onClick={() => onDelete?.(item)}
+                    disabled={deletingId === item.id}
+                    className="text-red-500 hover:text-red-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    删除
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

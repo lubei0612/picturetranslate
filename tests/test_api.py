@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 
 import pytest
@@ -20,14 +20,17 @@ import api.routes.translate as translate_route
 
 from api.dependencies import (
     get_cache_service,
+    get_demo_service,
     get_history_service,
     get_job_queue_service,
     get_layer_service,
     get_translator_service,
 )
 from api.main import app as fastapi_app
+from core.config import settings
 from core.exceptions import VersionConflictError
 from services.cache import CacheService
+from services.demo_service import DemoHistoryItem, DemoService
 from models.job import JobStatus
 from services.job_queue import JobCreateResult
 from models.translation import TranslationStatus
@@ -103,12 +106,31 @@ class FakeHistoryService:
                     "mask_path": None,
                     "result_path": "job-123/img-1/result.png",
                 },
-            )
+            ),
+            type(
+                "Record",
+                (),
+                {
+                    "id": "rec-2",
+                    "job_id": "job-456",
+                    "image_uuid": "img-2",
+                    "source_lang": "ja",
+                    "target_lang": "en",
+                    "field": "fashion",
+                    "status": TranslationStatus.PROCESSING,
+                    "created_at": datetime(2023, 12, 31, 0, 0, 0),
+                    "original_path": "job-456/img-2/original.png",
+                    "mask_path": None,
+                    "result_path": None,
+                },
+            ),
         ]
         self.deleted = None
 
-    def list_history(self, **kwargs):  # type: ignore[override]
-        return self.records, len(self.records)
+    def list_history(self, *, page=1, limit=20, **kwargs):  # type: ignore[override]
+        start = max(page - 1, 0) * limit
+        end = start + limit
+        return self.records[start:end], len(self.records)
 
     def get_translation(self, translation_id: str):  # type: ignore[override]
         for record in self.records:
@@ -287,6 +309,62 @@ async def test_history_endpoints_use_service():
         delete_resp = await client.delete("/api/history/rec-1")
         assert delete_resp.status_code == HTTP_204_NO_CONTENT
         assert fake_history.deleted == "rec-1"
+
+
+@pytest.mark.asyncio
+async def test_history_endpoint_merges_demo_records(monkeypatch):
+    fake_history = FakeHistoryService()
+    base_time = datetime(2024, 1, 5, tzinfo=timezone.utc)
+    demo_entries = [
+        DemoHistoryItem(
+            id="demo-1",
+            job_id="demo-job-1",
+            image_uuid="demo-img-1",
+            source_lang="zh-CN",
+            target_lang="en",
+            field="e-commerce",
+            status=TranslationStatus.DONE,
+            created_at=base_time,
+            original_url="https://example.com/demo-1.png",
+            result_url="https://example.com/demo-1-result.png",
+        ),
+        DemoHistoryItem(
+            id="demo-2",
+            job_id="demo-job-2",
+            image_uuid="demo-img-2",
+            source_lang="en",
+            target_lang="de",
+            field="electronics",
+            status=TranslationStatus.PROCESSING,
+            created_at=base_time - timedelta(hours=2),
+            original_url="https://example.com/demo-2.png",
+            result_url="https://example.com/demo-2-result.png",
+        ),
+    ]
+    demo_service = DemoService(history_items=demo_entries)
+
+    fastapi_app.dependency_overrides[get_history_service] = lambda: fake_history
+    fastapi_app.dependency_overrides[get_demo_service] = lambda: demo_service
+    monkeypatch.setattr(settings, "DEMO_MODE", True)
+
+    total_expected = len(fake_history.records) + len(demo_entries)
+
+    try:
+        async with create_client(fastapi_app) as client:
+            page1 = await client.get("/api/history", params={"page": 1, "limit": 1})
+            assert page1.status_code == HTTP_200_OK
+            payload1 = page1.json()
+            assert payload1["total"] == total_expected
+            assert payload1["pageSize"] == 1
+            assert payload1["items"][0]["is_demo"] is True
+
+            page2 = await client.get("/api/history", params={"page": 2, "limit": 1})
+            assert page2.status_code == HTTP_200_OK
+            payload2 = page2.json()
+            assert payload2["items"][0]["id"] == "demo-2"
+    finally:
+        fastapi_app.dependency_overrides.pop(get_history_service, None)
+        fastapi_app.dependency_overrides.pop(get_demo_service, None)
 
 
 @pytest.mark.asyncio

@@ -2,11 +2,11 @@
 
 from .cache import CacheService
 from .cleanup import CleanupService, cleanup_service
+from .demo_service import DemoService
 from .history import HistoryService
 from .job_queue import JobCreateResult, JobQueueService
 from .layer_service import LayerService
 from .storage import StorageService
-from .translator import TranslateParams, TranslatorService
 from .translator import TranslateParams, TranslatorService
 
 __all__ = [
@@ -20,4 +20,5 @@ __all__ = [
     "LayerService",
     "CleanupService",
     "cleanup_service",
+    "DemoService",
 ]

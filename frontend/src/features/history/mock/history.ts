@@ -8,6 +8,7 @@ export const MOCK_HISTORY: HistoryItem[] = [
     action: '翻译 (中文 → 英语)',
     result: 'success',
     projectId: '1',
+    isDemo: true,
   },
   {
     id: '2',
@@ -16,6 +17,7 @@ export const MOCK_HISTORY: HistoryItem[] = [
     action: '翻译 (中文 → 西班牙语)',
     result: 'success',
     projectId: '2',
+    isDemo: true,
   },
   {
     id: '3',
@@ -24,6 +26,7 @@ export const MOCK_HISTORY: HistoryItem[] = [
     action: '翻译 (中文 → 德语)',
     result: 'success',
     projectId: '3',
+    isDemo: true,
   },
   {
     id: '4',

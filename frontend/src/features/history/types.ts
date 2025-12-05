@@ -6,6 +6,7 @@ export interface HistoryItem {
   result: 'success' | 'failed';
   resultMessage?: string;
   projectId?: string;
+  isDemo?: boolean;
 }
 
 export interface HistoryListProps {

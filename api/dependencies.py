@@ -7,6 +7,7 @@ from functools import lru_cache
 from core.database import SessionLocal
 from services.cache import CacheService
 from services.cleanup import CleanupService, cleanup_service
+from services.demo_service import DemoService
 from services.history import HistoryService
 from services.job_queue import JobQueueService
 from services.layer_service import LayerService
@@ -18,6 +19,7 @@ from services.translator import TranslatorService
 @lru_cache(maxsize=1)
 def _translator_singleton() -> TranslatorService:
     return TranslatorService()
+
 
 
 @lru_cache(maxsize=1)
@@ -50,6 +52,11 @@ def _history_singleton() -> HistoryService:
     return HistoryService(session_factory=SessionLocal, storage_service=_storage_singleton())
 
 
+@lru_cache(maxsize=1)
+def _demo_service_singleton() -> DemoService:
+    return DemoService()
+
+
 def get_translator_service() -> TranslatorService:
     return _translator_singleton()
 
@@ -78,6 +85,10 @@ def get_layer_service() -> LayerService:
     return _layer_service_singleton()
 
 
+def get_demo_service() -> DemoService:
+    return _demo_service_singleton()
+
+
 __all__ = [
     "get_translator_service",
     "get_cache_service",
@@ -85,5 +96,6 @@ __all__ = [
     "get_job_queue_service",
     "get_history_service",
     "get_layer_service",
+    "get_demo_service",
     "get_cleanup_service",
 ]

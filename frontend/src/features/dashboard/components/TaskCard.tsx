@@ -8,13 +8,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({ project, onClick }) => {
 
   return (
     <div
+      data-testid="project-card"
       onClick={isClickable ? onClick : undefined}
       className={`
-        bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm
+        relative bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm
         transition-all duration-200 group
         ${isClickable ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : ''}
       `}
     >
+      {project.isDemo && (
+        <span
+          data-testid="project-demo-badge"
+          className="absolute top-3 right-3 text-[10px] uppercase tracking-wide font-semibold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full"
+        >
+          Demo
+        </span>
+      )}
       <div className="p-4 flex space-x-4">
         {/* Thumbnail */}
         <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative border border-gray-100">

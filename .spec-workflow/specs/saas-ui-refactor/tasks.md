@@ -633,9 +633,9 @@ Success: 引擎选择、语言配置、Demo 开关均正常工作
 ## Phase 6: 集成测试 + Demo 模式
 
 ### Task 6.1: 后端 Demo 数据
-- [ ] 6.1.1 创建 `services/demo_service.py`
-- [ ] 6.1.2 修改 History API 合并 Demo 数据
-- [ ] 6.1.3 添加 DEMO_MODE 环境变量控制
+- [x] 6.1.1 创建 `services/demo_service.py`
+- [x] 6.1.2 修改 History API 合并 Demo 数据
+- [x] 6.1.3 添加 DEMO_MODE 环境变量控制
 
 **执行模型**: Codex
 **预估耗时**: 45 min
@@ -644,9 +644,11 @@ Success: 引擎选择、语言配置、Demo 开关均正常工作
 ---
 
 ### Task 6.2: 前端 Demo 标识
-- [ ] 6.2.1 ProjectCard 添加 Demo 角标
-- [ ] 6.2.2 HistoryItem 添加 Demo 角标
-- [ ] 6.2.3 Settings 添加 Demo 开关
+- [x] 6.2.1 ProjectCard 添加 Demo 角标
+- [x] 6.2.2 HistoryItem 添加 Demo 角标
+- [x] 6.2.3 Settings 添加 Demo 开关
+- [x] 6.2.4 创建全局 SettingsContext 实现状态共享
+- [x] 6.2.5 Dashboard/History 页面从 Context 读取 demoMode
 
 **执行模型**: Claude
 **预估耗时**: 30 min

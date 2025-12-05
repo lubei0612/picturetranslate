@@ -6,11 +6,13 @@ import { useProjects } from '../hooks/useProjects';
 import { useUpload } from '../hooks/useUpload';
 import { PullToRefresh } from '@/shared/components';
 import { useIsMobile } from '@/shared/hooks';
+import { useGlobalSettings } from '@/shared/context';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { projects, loading, refresh } = useProjects({ demoMode: true });
+  const { settings } = useGlobalSettings();
+  const { projects, loading, refresh } = useProjects({ demoMode: settings.demoMode });
   const { isUploading, upload, uploadFromUrl } = useUpload();
 
   const handleProjectClick = (project: { id: string; status: string }) => {

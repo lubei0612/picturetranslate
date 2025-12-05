@@ -11,6 +11,7 @@ export const MOCK_PROJECTS: Project[] = [
     targetLang: '英语',
     createdAt: '2024-12-02T14:20:00Z',
     updatedAt: '2024-12-02T14:25:00Z',
+    isDemo: true,
   },
   {
     id: '2',
@@ -22,6 +23,7 @@ export const MOCK_PROJECTS: Project[] = [
     targetLang: '德语',
     createdAt: '2024-12-02T14:15:30Z',
     updatedAt: '2024-12-02T14:15:30Z',
+    isDemo: true,
   },
   {
     id: '3',
@@ -33,6 +35,7 @@ export const MOCK_PROJECTS: Project[] = [
     targetLang: '日语',
     createdAt: '2024-12-02T14:10:05Z',
     updatedAt: '2024-12-02T14:10:05Z',
+    isDemo: true,
   },
   {
     id: '4',
