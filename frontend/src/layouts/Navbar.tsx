@@ -35,6 +35,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuButton = fa
         </div>
       </div>
 
+      {/* Center: Welcome Message */}
+      <div className="hidden md:block text-center">
+        <span className="text-sm font-medium bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          祝贺各位内测老板发财大卖
+        </span>
+      </div>
+
       {/* Right: Actions */}
       <div className="flex items-center space-x-4">
         <button className="relative text-gray-400 hover:text-gray-600 transition-colors p-2">
