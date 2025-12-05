@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import type { StagingTextLayer, ToolType } from '../types';
 
 interface ImageViewerProps {
@@ -12,6 +12,11 @@ interface ImageViewerProps {
   onPanChange: (pan: { x: number; y: number }) => void;
   onZoomChange: (zoom: number) => void;
   activeTool: ToolType;
+}
+
+interface ImageSize {
+  width: number;
+  height: number;
 }
 
 export const ImageViewer: React.FC<ImageViewerProps> = ({
@@ -29,6 +34,31 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  
+  // 动态获取图片尺寸
+  const [imageSize, setImageSize] = useState<ImageSize>({ width: 500, height: 600 });
+  
+  useEffect(() => {
+    if (!translatedImage) return;
+    
+    const img = new Image();
+    img.onload = () => {
+      // 保持原始比例，但限制最大显示尺寸（视口友好）
+      const maxWidth = 800;
+      const maxHeight = 1200;
+      let { naturalWidth: w, naturalHeight: h } = img;
+      
+      // 如果图片太大，按比例缩小显示（但实际图片是原始尺寸）
+      if (w > maxWidth || h > maxHeight) {
+        const ratio = Math.min(maxWidth / w, maxHeight / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      
+      setImageSize({ width: w, height: h });
+    };
+    img.src = translatedImage;
+  }, [translatedImage]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (activeTool === 'resize') return;
@@ -102,20 +132,20 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
         style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
       >
         {/* Original Image */}
-        <div className="relative bg-white shadow-xl ring-1 ring-black/5" style={{ width: 500, height: 600 }}>
+        <div className="relative bg-white shadow-xl ring-1 ring-black/5" style={{ width: imageSize.width, height: imageSize.height }}>
           <div className="absolute -top-10 left-0 bg-white/80 backdrop-blur border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 shadow-sm">
             原图参考
           </div>
           <img
             src={originalImage}
             alt="Original"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             draggable={false}
           />
         </div>
 
         {/* Translated Image with Layers */}
-        <div className="relative bg-white shadow-xl ring-1 ring-black/5" style={{ width: 500, height: 600 }}>
+        <div className="relative bg-white shadow-xl ring-1 ring-black/5" style={{ width: imageSize.width, height: imageSize.height }}>
           <div className="absolute -top-10 left-0 bg-blue-50/90 backdrop-blur border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 shadow-sm">
             译文编辑
           </div>
@@ -123,7 +153,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
           <img
             src={translatedImage}
             alt="Translated"
-            className="w-full h-full object-cover opacity-90"
+            className="w-full h-full object-contain"
             draggable={false}
           />
 
