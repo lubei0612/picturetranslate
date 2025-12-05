@@ -290,21 +290,26 @@ class JobQueueService:
             session.commit()
 
     async def _maybe_emit_completion(self, job_id: str) -> None:
-        completed, failed, remaining = await asyncio.to_thread(self._update_job_progress, job_id)
+        completed, failed, remaining, translations = await asyncio.to_thread(self._update_job_progress, job_id)
         if remaining == 0:
             await self._sse.publish(
                 job_id,
                 SSEEvent(
                     event="complete",
-                    data={"job_id": job_id, "completed": completed, "failed": failed},
+                    data={
+                        "job_id": job_id,
+                        "completed": completed,
+                        "failed": failed,
+                        "translations": translations,
+                    },
                 ),
             )
 
-    def _update_job_progress(self, job_id: str) -> tuple[int, int, int]:
+    def _update_job_progress(self, job_id: str) -> tuple[int, int, int, list]:
         with self._session_factory() as session:
             job = session.get(Job, job_id)
             if not job:
-                return 0, 0, 0
+                return 0, 0, 0, []
 
             total = job.images_count
             completed = (
@@ -328,7 +333,16 @@ class JobQueueService:
             job.updated_at = datetime.utcnow()
             session.commit()
 
-            return completed, failed, remaining
+            translations = []
+            if remaining <= 0:
+                db_translations = (
+                    session.query(Translation)
+                    .filter(Translation.job_id == job_id)
+                    .all()
+                )
+                translations = [{"id": t.id, "status": t.status.value} for t in db_translations]
+
+            return completed, failed, remaining, translations
 
     def shutdown(self) -> None:
         if self._worker_task:
