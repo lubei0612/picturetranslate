@@ -22,6 +22,14 @@ class TranslateResult(BaseModel):
         default_factory=list,
         description="图层原始数据，后续会映射至 TextLayer ORM",
     )
+    editor_data: Optional[str] = Field(
+        default=None,
+        description="阿里云编辑器图层 JSON（用于 iframe 编辑器）",
+    )
+    inpainting_url: Optional[str] = Field(
+        default=None,
+        description="擦除文字后的背景图 URL",
+    )
     metadata: Optional[Mapping[str, Any]] = Field(
         default=None,
         description="可选的附加信息，如请求 ID、耗时等",

@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional, TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
@@ -35,6 +35,8 @@ class Translation(Base):
     original_path: Mapped[str] = mapped_column(String(255), nullable=False)
     mask_path: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     result_path: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    editor_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # 阿里云编辑器图层 JSON
+    inpainting_url: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)  # 擦除背景图 URL
     source_lang: Mapped[str] = mapped_column(String(32), nullable=False)
     target_lang: Mapped[str] = mapped_column(String(32), nullable=False)
     field: Mapped[str] = mapped_column(String(64), nullable=False, default="e-commerce")

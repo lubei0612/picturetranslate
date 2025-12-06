@@ -5,9 +5,11 @@ from __future__ import annotations
 import logging
 from contextlib import asynccontextmanager
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, Response
 
 from api.dependencies import get_job_queue_service
 from api.routes import engines, health, history, jobs, layers, translate
@@ -69,11 +71,16 @@ def create_app() -> FastAPI:
     app.include_router(engines.router, prefix="/api")
     app.include_router(layers.router, prefix="/api")
 
-    # Mount storage directory for serving translated images
-    import os
+    # 静态文件服务 (使用路由以支持 CORS)
     storage_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage")
     os.makedirs(storage_dir, exist_ok=True)
-    app.mount("/storage", StaticFiles(directory=storage_dir), name="storage")
+
+    @app.get("/storage/{path:path}")
+    async def serve_storage(path: str):
+        file_path = os.path.join(storage_dir, path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return Response(status_code=404)
 
     register_exception_handlers(app)
     return app

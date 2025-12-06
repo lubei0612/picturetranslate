@@ -98,6 +98,25 @@ async def get_history_item(
     return _serialize_translation(translation, storage)
 
 
+@router.get("/history/{translation_id}/editor")
+async def get_editor_data(
+    translation_id: str,
+    history_service: HistoryService = Depends(get_history_service),
+    storage: StorageService = Depends(get_storage_service),
+):
+    """获取阿里云编辑器数据，用于 iframe 编辑器渲染"""
+    translation = history_service.get_translation(translation_id)
+    return {
+        "id": translation.id,
+        "source_lang": translation.source_lang,
+        "target_lang": translation.target_lang,
+        "editor_data": translation.editor_data,
+        "inpainting_url": translation.inpainting_url,
+        "original_url": storage.to_public_path(translation.original_path) if translation.original_path else None,
+        "result_url": storage.to_public_path(translation.result_path) if translation.result_path else None,
+    }
+
+
 @router.delete("/history/{translation_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_history_item(
     translation_id: str,

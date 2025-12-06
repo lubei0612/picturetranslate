@@ -213,7 +213,7 @@ class JobQueueService:
             original_bytes = await asyncio.to_thread(self._storage.get_file, translation.original_path)
             translator = self._translator_factory()
             loop = asyncio.get_running_loop()
-            result_bytes = await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 self._executor,
                 lambda: translator.translate(
                     original_bytes,
@@ -228,9 +228,15 @@ class JobQueueService:
                 self._storage.save_result,
                 translation.job_id,
                 translation.image_uuid,
-                result_bytes,
+                result.image_bytes,
             )
-            await asyncio.to_thread(self._mark_translation_done, translation.id, result_path)
+            await asyncio.to_thread(
+                self._mark_translation_done,
+                translation.id,
+                result_path,
+                result.editor_data,
+                result.inpainting_url,
+            )
             await self._sse.publish(
                 translation.job_id,
                 SSEEvent(
@@ -259,12 +265,20 @@ class JobQueueService:
         finally:
             await self._maybe_emit_completion(translation.job_id)
 
-    def _mark_translation_done(self, translation_id: str, result_path: str) -> None:
+    def _mark_translation_done(
+        self,
+        translation_id: str,
+        result_path: str,
+        editor_data: str | None = None,
+        inpainting_url: str | None = None,
+    ) -> None:
         with self._session_factory() as session:
             db_translation = session.get(Translation, translation_id)
             if not db_translation:
                 return
             db_translation.result_path = result_path
+            db_translation.editor_data = editor_data
+            db_translation.inpainting_url = inpainting_url
             db_translation.status = TranslationStatus.DONE
             db_translation.error_message = None
             db_translation.updated_at = datetime.utcnow()

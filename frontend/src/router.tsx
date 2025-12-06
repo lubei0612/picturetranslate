@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ResponsiveLayout } from '@/layouts';
 import { DashboardPage } from '@/features/dashboard';
-import { EditorPage } from '@/features/editor';
+import { AliyunEditorPage } from '@/features/editor';
 import { HistoryPage } from '@/features/history';
 import { SettingsPage } from '@/features/settings';
 
@@ -25,8 +25,9 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    // 点击任务直接进入阿里云编辑器
     path: '/editor/:id',
-    element: <EditorPage />,
+    element: <AliyunEditorPage />,
   },
   {
     path: '*',

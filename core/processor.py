@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
 from io import BytesIO
 from typing import Optional
 
@@ -11,6 +12,14 @@ from PIL import Image, UnidentifiedImageError
 from core.engines import EngineRegistry
 from core.engines.aliyun import AliyunEngine
 from core.exceptions import TranslationError
+
+
+@dataclass
+class TranslationOutput:
+    """翻译结果，包含图片和编辑器数据"""
+    image_bytes: bytes
+    editor_data: Optional[str] = None
+    inpainting_url: Optional[str] = None
 
 
 class ImageTranslator:
@@ -35,7 +44,7 @@ class ImageTranslator:
         *,
         protect_product: Optional[bool] = None,
         engine: Optional[str] = None,
-    ) -> Image.Image:
+    ) -> TranslationOutput:
         """Keep the legacy synchronous API expected by TranslatorService."""
 
         try:
@@ -43,7 +52,7 @@ class ImageTranslator:
         except (UnidentifiedImageError, OSError) as exc:  # pragma: no cover - PIL raises
             raise TranslationError(f"无法读取图片: {exc}") from exc
 
-        result_bytes = self._run_translation(
+        return self._run_translation(
             image_bytes=image_bytes,
             source_lang=source_lang,
             target_lang=target_lang,
@@ -52,8 +61,6 @@ class ImageTranslator:
             protect_product=protect_product,
             preferred_engine=engine,
         )
-
-        return Image.open(BytesIO(result_bytes))
 
     def _run_translation(
         self,
@@ -65,7 +72,7 @@ class ImageTranslator:
         enable_postprocess: bool,
         protect_product: Optional[bool],
         preferred_engine: Optional[str],
-    ) -> bytes:
+    ) -> TranslationOutput:
         if self._custom_engine is not None:
             coro = self._custom_engine.translate(
                 image=image_bytes,
@@ -92,7 +99,11 @@ class ImageTranslator:
         result = self._run_async(coro)
         if not result.translated_image:
             raise TranslationError("翻译引擎没有返回图片数据")
-        return result.translated_image
+        return TranslationOutput(
+            image_bytes=result.translated_image,
+            editor_data=result.editor_data,
+            inpainting_url=result.inpainting_url,
+        )
 
     def _run_async(self, coro):
         try:
@@ -111,4 +122,4 @@ class ImageTranslator:
         return buffer.getvalue()
 
 
-__all__ = ["ImageTranslator"]
+__all__ = ["ImageTranslator", "TranslationOutput"]

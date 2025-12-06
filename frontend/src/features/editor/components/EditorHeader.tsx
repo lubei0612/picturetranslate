@@ -6,8 +6,10 @@ import {
   ZoomOut, 
   Monitor, 
   Undo2, 
-  Redo2 
+  Redo2,
+  Wand2
 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/shared/components';
 import type { EditorHeaderProps } from '../types';
 
@@ -19,6 +21,15 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   onDownload,
   showZoomControls = true,
 }) => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  
+  const handleAdvancedEdit = () => {
+    if (id) {
+      navigate(`/aliyun-editor/${id}`);
+    }
+  };
+
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-50">
       {/* Left: Back & Title */}
@@ -75,6 +86,15 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
             </button>
           </div>
         )}
+
+        <Button
+          variant="secondary"
+          size="md"
+          icon={<Wand2 className="w-4 h-4" />}
+          onClick={handleAdvancedEdit}
+        >
+          精修
+        </Button>
 
         <Button
           variant="primary"

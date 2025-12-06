@@ -45,6 +45,16 @@ function transformToHistoryItem(item: BackendHistoryItem): HistoryItem {
   };
 }
 
+export interface EditorData {
+  id: string;
+  source_lang: string;
+  target_lang: string;
+  editor_data: string | null;
+  inpainting_url: string | null;
+  original_url: string | null;
+  result_url: string | null;
+}
+
 export const historyApi = {
   list: async (params?: HistoryListParams): Promise<PaginatedResponse<HistoryItem>> => {
     const response = await api.get<{ items: BackendHistoryItem[]; total: number; page: number; pageSize: number; totalPages: number }>('/history', { params });
@@ -59,6 +69,10 @@ export const historyApi = {
 
   get: async (id: string): Promise<HistoryItem> => {
     return api.get<HistoryItem>(`/history/${id}`);
+  },
+
+  getEditorData: async (id: string): Promise<EditorData> => {
+    return api.get<EditorData>(`/history/${id}/editor`);
   },
 
   delete: async (id: string): Promise<void> => {

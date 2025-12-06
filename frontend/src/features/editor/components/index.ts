@@ -1,4 +1,5 @@
 export { EditorPage } from './EditorPage';
+export { AliyunEditorPage } from './AliyunEditorPage';
 export { EditorHeader } from './EditorHeader';
 export { EditorToolbar } from './EditorToolbar';
 export { ImageViewer } from './ImageViewer';

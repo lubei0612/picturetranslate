@@ -12,6 +12,7 @@ interface ImageViewerProps {
   onPanChange: (pan: { x: number; y: number }) => void;
   onZoomChange: (zoom: number) => void;
   activeTool: ToolType;
+  showLayers?: boolean;
 }
 
 interface ImageSize {
@@ -30,6 +31,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
   onPanChange,
   onZoomChange,
   activeTool,
+  showLayers = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -157,8 +159,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
             draggable={false}
           />
 
-          {/* Text Layers */}
-          {layers.map((layer) =>
+          {/* Text Layers - 只在编辑模式下显示，避免与 result.png 中的文字重叠 */}
+          {showLayers && layers.map((layer) =>
             layer.isVisible && (
               <div
                 key={layer.id}

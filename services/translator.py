@@ -10,7 +10,7 @@ from PIL import Image, UnidentifiedImageError
 
 from core.config import settings
 from core.exceptions import TranslationError
-from core.processor import ImageTranslator
+from core.processor import ImageTranslator, TranslationOutput
 from utils.retry import retry_on_failure
 
 
@@ -55,8 +55,8 @@ class TranslatorService:
         *,
         protect_product: Optional[bool] = None,
         engine: Optional[str] = None,
-    ) -> bytes:
-        """Execute translation, returning PNG bytes."""
+    ) -> TranslationOutput:
+        """Execute translation, returning TranslationOutput with image and editor data."""
 
         params = TranslateParams(
             source_lang=source_lang,
@@ -68,10 +68,9 @@ class TranslatorService:
         )
         return self.translate_with_params(image_bytes=image_bytes, params=params)
 
-    def translate_with_params(self, image_bytes: bytes, params: TranslateParams) -> bytes:
+    def translate_with_params(self, image_bytes: bytes, params: TranslateParams) -> TranslationOutput:
         pil_image = self._load_image(image_bytes)
-        translated = self._execute_with_retry(pil_image, params)
-        return self._to_png_bytes(translated)
+        return self._execute_with_retry(pil_image, params)
 
     def _load_image(self, image_bytes: bytes) -> Image.Image:
         try:
@@ -87,7 +86,7 @@ class TranslatorService:
         backoff="exponential",
         jitter=0.3,
     )
-    def _execute_with_retry(self, pil_image: Image.Image, params: TranslateParams) -> Image.Image:
+    def _execute_with_retry(self, pil_image: Image.Image, params: TranslateParams) -> TranslationOutput:
         try:
             return self.translator.translate(
                 image=pil_image,
@@ -95,16 +94,11 @@ class TranslatorService:
                 target_lang=params.target_lang,
                 field=params.field,
                 enable_postprocess=params.enable_postprocess,
+                protect_product=params.protect_product,
                 engine=params.engine,
             )
         except Exception as exc:  # pragma: no cover - depends on SDK
             raise TranslationError(str(exc)) from exc
-
-    @staticmethod
-    def _to_png_bytes(image: Image.Image) -> bytes:
-        buffer = BytesIO()
-        image.save(buffer, format="PNG")
-        return buffer.getvalue()
 
 
 __all__ = ["TranslatorService", "TranslateParams"]

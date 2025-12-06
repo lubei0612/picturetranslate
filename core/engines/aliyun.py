@@ -204,6 +204,10 @@ class AliyunEngine(TranslateEngine):
 
         data = body.data
         layers: list[dict[str, Any]] = []
+        
+        # 保存编辑器数据
+        editor_data = data.template_json
+        inpainting_url = data.in_painting_url
 
         # 电商图片直接使用阿里云最终结果，保留商品主体文字
         # 后处理会导致 in_painting_url 擦除所有文字（包括商品主体）
@@ -247,6 +251,8 @@ class AliyunEngine(TranslateEngine):
             engine_name=self.name,
             translated_image=image_result,
             layers=layers,
+            editor_data=editor_data,
+            inpainting_url=inpainting_url,
             metadata=metadata,
         )
 
