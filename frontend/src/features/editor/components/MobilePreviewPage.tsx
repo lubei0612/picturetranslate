@@ -6,21 +6,12 @@ import { historyApi, EditorData } from '@/features/history/api/historyApi';
 
 type ImageTab = 'original' | 'translated';
 
-// 获取后端基础 URL
-const getBackendUrl = () => {
-  const apiUrl = import.meta.env.VITE_API_BASE_URL || '';
-  if (apiUrl.startsWith('http')) {
-    return apiUrl.replace(/\/api$/, '');
-  }
-  return `${window.location.protocol}//${window.location.hostname}:8000`;
-};
-
-// 处理图片 URL，确保是完整路径
+// 处理图片 URL，确保是完整路径（统一走前端同源）
 const resolveImageUrl = (url: string | null | undefined): string | null => {
   if (!url) return null;
   if (url.startsWith('http')) return url;
   if (url.startsWith('/')) {
-    return `${getBackendUrl()}${url}`;
+    return `${window.location.origin}${url}`;
   }
   return url;
 };
