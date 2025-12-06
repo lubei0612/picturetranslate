@@ -30,6 +30,10 @@ const DEMO_TRANSLATION: TranslationRecord = {
 function buildImageUrl(path: string | null): string {
   if (!path) return '';
   if (path.startsWith('http')) return path;
+  // 静态文件统一走前端同源，避免在 https 下访问 8000 端口被拦截
+  if (path.startsWith('/storage')) {
+    return `${window.location.origin}${path}`;
+  }
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
   const baseUrl = apiBase.replace('/api', '');
   return `${baseUrl}${path}`;
