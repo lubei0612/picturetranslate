@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA"/>
+      <stop offset="100%" style="stop-color:#A78BFA"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆角矩形 -->
+  <rect x="32" y="32" width="448" height="448" rx="64" fill="url(#bg)"/>
+  
+  <!-- 图片框架 -->
+  <rect x="80" y="100" width="200" height="160" rx="16" fill="white" opacity="0.95"/>
+  <rect x="80" y="100" width="200" height="160" rx="16" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  
+  <!-- 图片内的山和太阳 -->
+  <circle cx="140" cy="145" r="20" fill="#FCD34D"/>
+  <path d="M100 240 L150 180 L190 220 L220 190 L260 240 Z" fill="#10B981"/>
+  
+  <!-- 翻译箭头 -->
+  <path d="M300 180 L380 180" stroke="white" stroke-width="16" stroke-linecap="round"/>
+  <path d="M355 155 L385 180 L355 205" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- 目标图片框架 -->
+  <rect x="232" y="252" width="200" height="160" rx="16" fill="white" opacity="0.95"/>
+  <rect x="232" y="252" width="200" height="160" rx="16" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  
+  <!-- 翻译后的文字符号 -->
+  <text x="280" y="320" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#3B82F6">文</text>
+  <text x="340" y="320" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#8B5CF6">A</text>
+  <text x="390" y="320" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#3B82F6">译</text>
+  
+  <!-- AI 标识 -->
+  <circle cx="412" cy="392" r="28" fill="white"/>
+  <text x="412" y="400" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#3B82F6" text-anchor="middle">AI</text>
+</svg>
