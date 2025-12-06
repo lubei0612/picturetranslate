@@ -9,6 +9,8 @@ export const MOCK_HISTORY: HistoryItem[] = [
     result: 'success',
     projectId: '1',
     isDemo: true,
+    thumbnailUrl: 'https://picsum.photos/id/1/200/200',
+    resultUrl: 'https://picsum.photos/id/1/500/600',
   },
   {
     id: '2',
@@ -18,6 +20,8 @@ export const MOCK_HISTORY: HistoryItem[] = [
     result: 'success',
     projectId: '2',
     isDemo: true,
+    thumbnailUrl: 'https://picsum.photos/id/111/200/200',
+    resultUrl: 'https://picsum.photos/id/111/500/600',
   },
   {
     id: '3',
@@ -27,6 +31,8 @@ export const MOCK_HISTORY: HistoryItem[] = [
     result: 'success',
     projectId: '3',
     isDemo: true,
+    thumbnailUrl: 'https://picsum.photos/id/169/200/200',
+    resultUrl: 'https://picsum.photos/id/169/500/600',
   },
   {
     id: '4',
@@ -43,5 +49,7 @@ export const MOCK_HISTORY: HistoryItem[] = [
     action: '翻译 (中文 → 日语)',
     result: 'success',
     projectId: '5',
+    thumbnailUrl: 'https://picsum.photos/id/175/200/200',
+    resultUrl: 'https://picsum.photos/id/175/500/600',
   },
 ];

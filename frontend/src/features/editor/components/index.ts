@@ -7,3 +7,4 @@ export { LayerPanel } from './LayerPanel';
 export { LayerList } from './LayerList';
 export { LayerSettings } from './LayerSettings';
 export { MobileEditor } from './MobileEditor';
+export { MobilePreviewPage } from './MobilePreviewPage';

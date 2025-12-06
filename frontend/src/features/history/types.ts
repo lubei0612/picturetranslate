@@ -7,6 +7,8 @@ export interface HistoryItem {
   resultMessage?: string;
   projectId?: string;
   isDemo?: boolean;
+  thumbnailUrl?: string;
+  resultUrl?: string;
 }
 
 export interface HistoryListProps {

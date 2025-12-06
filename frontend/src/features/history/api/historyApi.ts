@@ -15,7 +15,9 @@ interface BackendHistoryItem {
   status: string;
   created_at: string;
   original_path?: string;
+  original_url?: string;
   result_path?: string;
+  result_url?: string;
   is_demo?: boolean;
 }
 
@@ -30,9 +32,19 @@ const LANG_MAP: Record<string, string> = {
   'auto': '自动检测',
 };
 
+function resolveImageUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/')) return `${window.location.origin}${url}`;
+  return url;
+}
+
 function transformToHistoryItem(item: BackendHistoryItem): HistoryItem {
   const sourceLang = LANG_MAP[item.source_lang] || item.source_lang;
   const targetLang = LANG_MAP[item.target_lang] || item.target_lang;
+  
+  const thumbnailUrl = resolveImageUrl(item.result_url) || resolveImageUrl(item.original_url);
+  const resultUrl = resolveImageUrl(item.result_url);
   
   return {
     id: item.id,
@@ -42,6 +54,8 @@ function transformToHistoryItem(item: BackendHistoryItem): HistoryItem {
     result: item.status === 'done' ? 'success' : 'failed',
     projectId: item.status === 'done' ? item.id : undefined,
     isDemo: item.is_demo,
+    thumbnailUrl,
+    resultUrl,
   };
 }
 
